@@ -36,7 +36,10 @@ public class Main {
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
         byte[] bytes = jsonResponse.getBytes("UTF-8");
         exchange.sendResponseHeaders(200, bytes.length);
-            os.write(bytes);
+
+        OutputStream os = exchange.getResponseBody();
+        os.write(bytes);
+        os.close();
     }
 
     static class StaticFileHandler implements HttpHandler {
@@ -55,13 +58,24 @@ public class Main {
 
                 exchange.getResponseHeaders().set("Content-Type", contentType + "; charset=UTF-8");
                 exchange.sendResponseHeaders(200, file.length());
-                    byte[] buffer = new byte[1024];
-                    int count;
-                    while ((count = fs.read(buffer)) >= 0) {
-                        os.write(buffer, 0, count);
-                    }
+
+                FileInputStream fs = new FileInputStream(file);
+                OutputStream os = exchange.getResponseBody();
+                byte[] buffer = new byte[1024];
+                int count;
+                while ((count = fs.read(buffer)) >= 0) {
+                    os.write(buffer, 0, count);
+                }
+                fs.close();
+                os.close();
             } else {
                 String msg = "404 Not Found";
+                byte[] bytes = msg.getBytes("UTF-8");
+                exchange.sendResponseHeaders(404, bytes.length);
+
+                OutputStream os = exchange.getResponseBody();
+                os.write(bytes);
+                os.close();
             }
         }
     }
