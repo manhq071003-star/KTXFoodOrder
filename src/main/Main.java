@@ -1,4 +1,7 @@
 package main;
 
-public class Main git init{
+public class Main {
+    static void main(String[] args) {
+
+    }
 }
