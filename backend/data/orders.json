@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "id": "ORD001",
+    "studentId": "SV001",
+    "items": [
+      {
+        "foodId": "F001",
+        "foodName": "Cơm gà xối mỡ",
+        "quantity": 1,
+        "price": 35000.0
+      },
+      {
+        "foodId": "F003",
+        "foodName": "Trà sữa thái xanh",
+        "quantity": 1,
+        "price": 20000.0
+      }
+    ],
+    "totalAmount": 55000.0,
+    "status": "COMPLETED",
+    "orderTime": "2026-08-27T12:30:00"
+  },
+  {
+    "id": "ORD002",
+    "studentId": "SV002",
+    "items": [
+      {
+        "foodId": "F002",
+        "foodName": "Bún bò Huế",
+        "quantity": 1,
+        "price": 40000.0
+      }
+    ],
+    "totalAmount": 40000.0,
+    "status": "PENDING",
+    "orderTime": "2026-08-27T18:15:00"
+  }
+]

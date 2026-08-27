@@ -20,7 +20,6 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-    // Tự động sinh ID đơn hàng và trả về Order vừa tạo
     public Order createOrder(String studentId, List<OrderDetail> items, double totalAmount) {
         String id = "ORD" + System.currentTimeMillis();
         Order newOrder = new Order(id, studentId, items, totalAmount);
