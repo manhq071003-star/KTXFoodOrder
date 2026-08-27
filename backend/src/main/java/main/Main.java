@@ -4,6 +4,8 @@ import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
 import handler.OrderHandler;
+import handler.StudentHandler;
+import handler.FoodHandler;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,18 +18,24 @@ public class Main {
         int port = 8080;
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
 
+        // 1. API Đơn hàng (Thành viên 5)
         OrderHandler orderHandler = new OrderHandler();
-
-        // REST API Endpoint riêng do Thành viên 5 quản lý
         server.createContext("/api/orders", exchange -> sendJsonResponse(exchange, orderHandler.handleGetAllOrders()));
 
-        // Phục vụ file tĩnh Frontend Web (HTML/CSS/JS)
+        // 2. API Sinh viên (Thành viên 1)
+        StudentHandler studentHandler = new StudentHandler();
+        server.createContext("/api/students", exchange -> sendJsonResponse(exchange, studentHandler.handleGetAllStudents()));
+
+        // 3. API Thực đơn (Thành viên 2)
+        FoodHandler foodHandler = new FoodHandler();
+        server.createContext("/api/foods", exchange -> sendJsonResponse(exchange, foodHandler.handleGetAllFoods()));
+
+        // Phục vụ file tĩnh Frontend Web
         server.createContext("/", new StaticFileHandler());
 
         server.setExecutor(null);
         System.out.println("====================================================");
-        System.out.println("🚀 [MEMBER 5 CORE SERVER] Server đang chạy tại:");
-        System.out.println("👉 http://localhost:" + port);
+        System.out.println("🚀 Server đang chạy tại: http://localhost:" + port);
         System.out.println("====================================================");
         server.start();
     }

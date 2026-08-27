@@ -3,55 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KTX Food Order - Hệ Thống Đặt Đồ Ăn KTX</title>
+    <title>KTX Food Order</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header>
-    <div class="header-content">
-        <h1>🍜 KTX Food Order</h1>
-        <div id="user-profile" class="user-info">
-            <span>Đang tải thông tin sinh viên...</span>
-        </div>
-    </div>
+    <h1>🍔 KTX Food Order System</h1>
 </header>
-
-<main class="container">
-    <!-- Khu vực thực đơn -->
-    <section class="menu-section">
-        <h2>Danh Sách Món Ăn</h2>
-        <div id="food-grid" class="food-grid">
-            <!-- Món ăn sẽ được render tự động từ API bằng app.js -->
-        </div>
+<main>
+    <section id="food-list">
+        <h2>Danh sách món ăn</h2>
+        <div id="foods-container">Đang tải danh sách món ăn...</div>
     </section>
-
-    <!-- Khu vực giỏ hàng -->
-    <aside class="cart-section">
-        <h2>🛒 Giỏ Hàng Của Bạn</h2>
-        <div id="cart-items" class="cart-items">
-            <p class="empty-cart">Giỏ hàng đang trống</p>
-        </div>
-
-        <div class="cart-summary">
-            <div class="total-row">
-                <span>Tổng cộng:</span>
-                <strong id="cart-total">0 VNĐ</strong>
-            </div>
-
-            <div class="payment-select">
-                <label for="payment-method">Phương thức thanh toán:</label>
-                <select id="payment-method">
-                    <option value="WALLET">Ví Sinh Viên</option>
-                    <option value="CASH">Tiền Mặt</option>
-                    <option value="BANK">Chuyển Khoản</option>
-                </select>
-            </div>
-
-            <button class="btn-checkout" onclick="checkout()">Xác Nhận Đặt Hàng</button>
-        </div>
-    </aside>
 </main>
-
 <script src="app.js"></script>
 </body>
 </html>

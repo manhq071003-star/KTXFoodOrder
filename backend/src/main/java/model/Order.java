@@ -12,7 +12,6 @@ public class Order {
 
     public Order() {}
 
-    // Constructor 4 tham số khớp với OrderService
     public Order(String id, String studentId, List<OrderDetail> items, double totalAmount) {
         this.id = id;
         this.studentId = studentId;
@@ -22,7 +21,6 @@ public class Order {
         this.orderTime = java.time.LocalDateTime.now().toString();
     }
 
-    // Constructor 6 tham số đầy đủ
     public Order(String id, String studentId, List<OrderDetail> items, double totalAmount, String status, String orderTime) {
         this.id = id;
         this.studentId = studentId;
