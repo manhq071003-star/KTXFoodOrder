@@ -2,28 +2,28 @@ package model;
 
 public class Student extends User {
 
-    private String dormitoryAddress;
+    private String room;
     private double balance;
 
     public Student() {
         super();
     }
 
-    public Student(String id, String fullName, String phone,
-                   String dormitoryAddress, double balance) {
+    public Student(String id, String name, String phone,
+                   String room, double balance) {
 
-        super(id, fullName, phone);
+        super(id, name, phone);
 
-        this.dormitoryAddress = dormitoryAddress;
+        this.room = room;
         this.balance = balance;
     }
 
-    public String getDormitoryAddress() {
-        return dormitoryAddress;
+    public String getRoom() {
+        return room;
     }
 
-    public void setDormitoryAddress(String dormitoryAddress) {
-        this.dormitoryAddress = dormitoryAddress;
+    public void setRoom(String room) {
+        this.room = room;
     }
 
     public double getBalance() {
@@ -38,9 +38,9 @@ public class Student extends User {
     public String toString() {
         return "Student{" +
                 "id='" + getId() + '\'' +
-                ", fullName='" + getFullName() + '\'' +
+                ", name='" + getName() + '\'' +
                 ", phone='" + getPhone() + '\'' +
-                ", dormitoryAddress='" + dormitoryAddress + '\'' +
+                ", room='" + room + '\'' +
                 ", balance=" + balance +
                 '}';
     }

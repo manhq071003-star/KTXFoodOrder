@@ -3,15 +3,15 @@ package model;
 public class User {
 
     private String id;
-    private String fullName;
+    private String name;
     private String phone;
 
     public User() {
     }
 
-    public User(String id, String fullName, String phone) {
+    public User(String id, String name, String phone) {
         this.id = id;
-        this.fullName = fullName;
+        this.name = name;
         this.phone = phone;
     }
 
@@ -23,12 +23,12 @@ public class User {
         this.id = id;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getName() {
+        return name;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPhone() {
@@ -43,7 +43,7 @@ public class User {
     public String toString() {
         return "User{" +
                 "id='" + id + '\'' +
-                ", fullName='" + fullName + '\'' +
+                ", name='" + name + '\'' +
                 ", phone='" + phone + '\'' +
                 '}';
     }
