@@ -3,28 +3,28 @@ package service;
 import model.Order;
 import model.OrderDetail;
 import repository.OrderRepository;
-import utils.CodeGenerator;
-import utils.CustomExceptions.InvalidDataException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class OrderService {
-    private OrderRepository orderRepo = new OrderRepository();
-
-    public Order createOrder(String studentId, List<OrderDetail> details, double totalAmount) throws InvalidDataException {
-        if (details == null || details.isEmpty()) {
-            throw new InvalidDataException("Lỗi: Giỏ hàng rỗng, không thể tạo đơn hàng!");
-        }
-
-        String orderId = CodeGenerator.generateOrderId();
-        Order newOrder = new Order(orderId, studentId, details, totalAmount);
-        newOrder.setStatus("Đã thanh toán");
-
-        orderRepo.saveOrder(newOrder);
-        return newOrder;
-    }
+    private final OrderRepository orderRepository = new OrderRepository();
 
     public List<Order> getAllOrders() {
-        return orderRepo.loadAll();
+        return orderRepository.loadAll();
+    }
+
+    public List<Order> getOrdersByStudentId(String studentId) {
+        return orderRepository.loadAll().stream()
+                .filter(o -> o.getStudentId().equalsIgnoreCase(studentId))
+                .collect(Collectors.toList());
+    }
+
+    // Tự động sinh ID đơn hàng và trả về Order vừa tạo
+    public Order createOrder(String studentId, List<OrderDetail> items, double totalAmount) {
+        String id = "ORD" + System.currentTimeMillis();
+        Order newOrder = new Order(id, studentId, items, totalAmount);
+        orderRepository.saveOrder(newOrder);
+        return newOrder;
     }
 }
