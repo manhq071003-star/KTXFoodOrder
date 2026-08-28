@@ -1,12 +1,25 @@
 package handler;
 
-import repository.StudentRepository;
-import utils.GsonUtils;
+import com.google.gson.Gson;
+import model.Student;
+import service.StudentService;
+
+import java.util.List;
 
 public class StudentHandler {
-    private StudentRepository studentRepo = new StudentRepository();
+    private final StudentService studentService = new StudentService();
+    private final Gson gson = new Gson();
 
     public String handleGetAllStudents() {
-        return GsonUtils.getGson().toJson(studentRepo.loadAll());
+        List<Student> students = studentService.getAllStudents();
+        return gson.toJson(students);
+    }
+
+    public String handleGetStudentById(String id) {
+        Student student = studentService.getStudentById(id);
+        if (student != null) {
+            return gson.toJson(student);
+        }
+        return "{\"error\": \"Student not found\"}";
     }
 }
