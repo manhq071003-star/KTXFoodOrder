@@ -5,17 +5,15 @@ import model.User;
 public class CashPayment implements PaymentMethod {
 
     @Override
-    public boolean pay(User user, double amount) {
+    public PaymentResult pay(
+            User user,
+            double amount) {
 
-        System.out.println(
-                "Da chon thanh toan bang tien mat."
+        return new PaymentResult(
+                PaymentStatus.PENDING,
+                "Don hang cho thanh toan bang tien mat.",
+                getMethodName()
         );
-
-        System.out.println(
-                "Vui long thanh toan khi nhan don."
-        );
-
-        return true;
     }
 
     @Override

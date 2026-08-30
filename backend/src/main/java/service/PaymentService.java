@@ -1,38 +1,36 @@
 package service;
 
+
 import model.User;
 
 public class PaymentService {
 
-    public boolean processPayment(
+    public PaymentResult processPayment(
             User user,
             double amount,
             PaymentMethod paymentMethod) {
 
         try {
 
-            // BR01
             PaymentBusinessRules.validateUser(user);
 
-            // BR02
+            PaymentBusinessRules.validateAmount(amount);
+
             PaymentBusinessRules.validatePaymentMethod(
                     paymentMethod
             );
 
-            // BR03
-            PaymentBusinessRules.validateAmount(amount);
-
-            // Thực hiện thanh toán
             return paymentMethod.pay(user, amount);
 
         } catch (IllegalArgumentException e) {
 
-            System.out.println(
-                    "Thanh toan that bai: "
-                            + e.getMessage()
+            return new PaymentResult(
+                    PaymentStatus.FAILED,
+                    e.getMessage(),
+                    paymentMethod != null
+                            ? paymentMethod.getMethodName()
+                            : "UNKNOWN"
             );
-
-            return false;
         }
     }
 }

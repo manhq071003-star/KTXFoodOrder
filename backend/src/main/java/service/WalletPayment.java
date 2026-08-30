@@ -5,35 +5,28 @@ import model.User;
 public class WalletPayment implements PaymentMethod {
 
     @Override
-    public boolean pay(User user, double amount) {
+    public PaymentResult pay(
+            User user,
+            double amount) {
 
-        try {
+        if (user.getBalance() < amount) {
 
-            // BR04
-            PaymentBusinessRules.validateSufficientBalance(
-                    user,
-                    amount
+            return new PaymentResult(
+                    PaymentStatus.FAILED,
+                    "So du vi khong du.",
+                    getMethodName()
             );
-
-            user.setBalance(
-                    user.getBalance() - amount
-            );
-
-            System.out.println(
-                    "Thanh toan bang vi thanh cong."
-            );
-
-            return true;
-
-        } catch (IllegalArgumentException e) {
-
-            System.out.println(
-                    "Thanh toan bang vi that bai: "
-                            + e.getMessage()
-            );
-
-            return false;
         }
+
+        user.setBalance(
+                user.getBalance() - amount
+        );
+
+        return new PaymentResult(
+                PaymentStatus.SUCCESS,
+                "Thanh toan bang vi thanh cong.",
+                getMethodName()
+        );
     }
 
     @Override
