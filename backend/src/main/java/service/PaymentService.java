@@ -1,36 +1,22 @@
 package service;
 
-
-import model.User;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PaymentService {
+    private final Map<String, PaymentMethod> methods = new HashMap<>();
 
-    public PaymentResult processPayment(
-            User user,
-            double amount,
-            PaymentMethod paymentMethod) {
+    public PaymentService() {
+        methods.put("WALLET", new WalletPayment());
+        methods.put("CASH", new CashPayment());
+        methods.put("BANK", new BankTransferPayment());
+    }
 
-        try {
-
-            PaymentBusinessRules.validateUser(user);
-
-            PaymentBusinessRules.validateAmount(amount);
-
-            PaymentBusinessRules.validatePaymentMethod(
-                    paymentMethod
-            );
-
-            return paymentMethod.pay(user, amount);
-
-        } catch (IllegalArgumentException e) {
-
-            return new PaymentResult(
-                    PaymentStatus.FAILED,
-                    e.getMessage(),
-                    paymentMethod != null
-                            ? paymentMethod.getMethodName()
-                            : "UNKNOWN"
-            );
+    public PaymentMethod getPaymentMethod(String code) {
+        PaymentMethod method = methods.get(code.toUpperCase());
+        if (method == null) {
+            throw new IllegalArgumentException("Hình thức thanh toán không hợp lệ: " + code);
         }
+        return method;
     }
 }

@@ -1,23 +1,15 @@
 package service;
 
-import model.User;
+import model.Student;
 
 public class CashPayment implements PaymentMethod {
-
     @Override
-    public PaymentResult pay(
-            User user,
-            double amount) {
-
-        return new PaymentResult(
-                PaymentStatus.PENDING,
-                "Don hang cho thanh toan bang tien mat.",
-                getMethodName()
-        );
+    public boolean processPayment(Student student, double amount) {
+        return true;
     }
 
     @Override
     public String getMethodName() {
-        return "CASH";
+        return "Tiền mặt";
     }
 }

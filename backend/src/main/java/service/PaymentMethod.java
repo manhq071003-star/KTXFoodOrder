@@ -1,10 +1,8 @@
 package service;
 
-import model.User;
+import model.Student;
 
 public interface PaymentMethod {
-
-    PaymentResult pay(User user, double amount);
-
+    boolean processPayment(Student student, double amount);
     String getMethodName();
 }

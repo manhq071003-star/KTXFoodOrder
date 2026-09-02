@@ -1,36 +1,20 @@
 package service;
 
-import model.User;
+import model.Student;
+import utils.CustomExceptions.InsufficientBalanceException;
 
 public class WalletPayment implements PaymentMethod {
-
     @Override
-    public PaymentResult pay(
-            User user,
-            double amount) {
-
-        if (user.getBalance() < amount) {
-
-            return new PaymentResult(
-                    PaymentStatus.FAILED,
-                    "So du vi khong du.",
-                    getMethodName()
-            );
+    public boolean processPayment(Student student, double amount) {
+        if (student.getBalance() < amount) {
+            throw new InsufficientBalanceException("Số dư ví không đủ để thực hiện thanh toán (" + student.getBalance() + " < " + amount + ")");
         }
-
-        user.setBalance(
-                user.getBalance() - amount
-        );
-
-        return new PaymentResult(
-                PaymentStatus.SUCCESS,
-                "Thanh toan bang vi thanh cong.",
-                getMethodName()
-        );
+        student.setBalance(student.getBalance() - amount);
+        return true;
     }
 
     @Override
     public String getMethodName() {
-        return "WALLET";
+        return "Ví sinh viên";
     }
 }
