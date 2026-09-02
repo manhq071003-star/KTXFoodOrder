@@ -14,9 +14,19 @@ public class Student extends User {
         this.balance = balance;
     }
 
-    public String getRoom() { return room; }
-    public void setRoom(String room) { this.room = room; }
+    public String getRoom() {
+        return room;
+    }
 
-    public double getBalance() { return balance; }
-    public void setBalance(double balance) { this.balance = balance; }
+    public void setRoom(String room) {
+        this.room = room;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
 }

@@ -2,22 +2,22 @@ package model;
 
 public class User {
     protected String id;
-    protected String name;
+    protected String fullName;
     protected String phone;
 
     public User() {}
 
-    public User(String id, String name, String phone) {
+    public User(String id, String fullName, String phone) {
         this.id = id;
-        this.name = name;
+        this.fullName = fullName;
         this.phone = phone;
     }
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
