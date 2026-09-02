@@ -3,19 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KTX Food Order</title>
+    <title>KTX FoodExpress - Hệ Thống Đặt Đồ Ăn KTX</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header>
-    <h1>🍔 KTX Food Order System</h1>
-</header>
-<main>
-    <section id="food-list">
-        <h2>Danh sách món ăn</h2>
-        <div id="foods-container">Đang tải danh sách món ăn...</div>
-    </section>
-</main>
+
+<div class="container">
+    <h1 class="header-title">🍔 KTX <span>FoodExpress</span></h1>
+
+    <div class="user-card">
+        <div class="user-info">
+            <h3 id="sv-name">Đang tải...</h3>
+            <p>Mã SV: <span id="sv-id">SV001</span> | Phòng: <span id="sv-room">--</span></p>
+        </div>
+        <div class="user-balance">
+            <label>Số dư Ví Sinh Viên</label>
+            <strong id="sv-balance">0</strong> VNĐ
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <div class="section-card">
+            <div class="section-header">
+                <h2 class="section-title">Thực Đơn Hôm Nay</h2>
+            </div>
+            <input type="text" id="search-box" class="search-input" placeholder="🔍 Tìm kiếm món ăn ngon..." onkeyup="searchFood()">
+            <div id="food-list" class="food-grid"></div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-header">
+                <h2 class="section-title">Giỏ Hàng Của Bạn 🛒</h2>
+            </div>
+
+            <table class="cart-table">
+                <thead>
+                <tr>
+                    <th>Món</th>
+                    <th>SL</th>
+                    <th>Thành tiền</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody id="cart-items"></tbody>
+            </table>
+
+            <div class="checkout-box">
+                <div class="total-row">
+                    <span>Tổng thanh toán:</span>
+                    <span id="cart-total" class="total-price">0 VNĐ</span>
+                </div>
+
+                <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Hình thức thanh toán:</label>
+                <select id="payment-method" class="payment-select">
+                    <option value="WALLET">💳 Ví sinh viên</option>
+                    <option value="CASH">💵 Tiền mặt khi nhận hàng</option>
+                    <option value="BANK">🏦 Chuyển khoản ngân hàng</option>
+                </select>
+
+                <button onclick="checkout()" class="btn-checkout">XÁC NHẬN ĐẶT HÀNG</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="app.js"></script>
 </body>
 </html>

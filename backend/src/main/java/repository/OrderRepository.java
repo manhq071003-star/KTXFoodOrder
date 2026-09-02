@@ -26,7 +26,7 @@ public class OrderRepository {
         }
 
         try (FileReader reader = new FileReader(file)) {
-            Type listType = new TypeToken<ArrayList<Order>>() {}.getType();
+            Type listType = new TypeToken<ArrayList<Order>>(){}.getType();
             List<Order> orders = gson.fromJson(reader, listType);
             return orders != null ? orders : new ArrayList<>();
         } catch (IOException e) {
@@ -45,6 +45,7 @@ public class OrderRepository {
         if (parent != null && !parent.exists()) {
             parent.mkdirs();
         }
+
         try (FileWriter writer = new FileWriter(file)) {
             gson.toJson(orders, writer);
         } catch (IOException e) {

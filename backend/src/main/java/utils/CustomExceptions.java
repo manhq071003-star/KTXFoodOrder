@@ -1,13 +1,19 @@
 package utils;
 
 public class CustomExceptions {
-    public static class OutOfStockException extends Exception {
-        public OutOfStockException(String message) { super(message); }
-    }
-    public static class InsufficientBalanceException extends Exception {
+    public static class InsufficientBalanceException extends RuntimeException {
         public InsufficientBalanceException(String message) { super(message); }
     }
-    public static class InvalidDataException extends Exception {
-        public InvalidDataException(String message) { super(message); }
+
+    public static class OutOfStockException extends RuntimeException {
+        public OutOfStockException(String message) { super(message); }
+    }
+
+    public static class EmptyCartException extends RuntimeException {
+        public EmptyCartException(String message) { super(message); }
+    }
+
+    public static class ResourceNotFoundException extends RuntimeException {
+        public ResourceNotFoundException(String message) { super(message); }
     }
 }
