@@ -3,6 +3,7 @@ package service;
 import model.Student;
 
 public interface PaymentMethod {
-    boolean processPayment(Student student, double amount);
+    String getTypeCode();
     String getMethodName();
+    void processPayment(Student student, double amount);
 }

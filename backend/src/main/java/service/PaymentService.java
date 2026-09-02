@@ -7,15 +7,19 @@ public class PaymentService {
     private final Map<String, PaymentMethod> methods = new HashMap<>();
 
     public PaymentService() {
-        methods.put("WALLET", new WalletPayment());
-        methods.put("CASH", new CashPayment());
-        methods.put("BANK", new BankTransferPayment());
+        registerMethod(new WalletPayment());
+        registerMethod(new CashPayment());
+        registerMethod(new BankTransferPayment());
     }
 
-    public PaymentMethod getPaymentMethod(String code) {
-        PaymentMethod method = methods.get(code.toUpperCase());
+    private void registerMethod(PaymentMethod method) {
+        methods.put(method.getTypeCode().toUpperCase(), method);
+    }
+
+    public PaymentMethod getPaymentMethod(String typeCode) {
+        PaymentMethod method = methods.get(typeCode.toUpperCase());
         if (method == null) {
-            throw new IllegalArgumentException("Hình thức thanh toán không hợp lệ: " + code);
+            throw new IllegalArgumentException("Phương thức thanh toán không hợp lệ: " + typeCode);
         }
         return method;
     }
