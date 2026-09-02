@@ -14,26 +14,32 @@ public class FoodHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
-            String query = exchange.getRequestURI().getQuery();
-            Object responseData;
+        try {
+            if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+                String query = exchange.getRequestURI().getQuery();
+                String response;
 
-            if (query != null && query.startsWith("search=")) {
-                String keyword = query.substring(7);
-                responseData = foodService.searchByName(keyword);
+                if (query != null && query.startsWith("search=")) {
+                    String keyword = query.split("=")[1];
+                    response = GsonUtils.getGson().toJson(foodService.searchByName(keyword));
+                } else {
+                    response = GsonUtils.getGson().toJson(foodService.getAllFoods());
+                }
+
+                sendResponse(exchange, 200, response);
             } else {
-                responseData = foodService.getAllFoods();
+                sendResponse(exchange, 405, "{\"error\": \"Method không hỗ trợ\"}");
             }
-
-            String json = GsonUtils.getGson().toJson(responseData);
-            sendResponse(exchange, 200, json);
-        } else {
-            sendResponse(exchange, 405, "{\"error\": \"Method không hỗ trợ\"}");
+        } catch (Exception e) {
+            sendResponse(exchange, 400, "{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
 
     private void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
         byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
+        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
         exchange.sendResponseHeaders(statusCode, bytes.length);
         try (OutputStream os = exchange.getResponseBody()) {

@@ -1,30 +1,20 @@
 [
   {
-    "id": "F01",
-    "name": "Cơm tấm sườn nướng",
-    "price": 35000.0,
-    "category": "Cơm",
-    "isAvailable": true
+    "id": "F001",
+    "name": "Cơm tấm sườn",
+    "price": 30000.0,
+    "available": true
   },
   {
-    "id": "F02",
+    "id": "F002",
     "name": "Bún bò Huế",
-    "price": 40000.0,
-    "category": "Bún/Phở",
-    "isAvailable": true
-  },
-  {
-    "id": "F03",
-    "name": "Trà sữa Thái xanh",
-    "price": 20000.0,
-    "category": "Đồ uống",
-    "isAvailable": true
-  },
-  {
-    "id": "F04",
-    "name": "Mì xào hải sản (Hết hàng)",
     "price": 35000.0,
-    "category": "Mì",
-    "isAvailable": false
+    "available": true
+  },
+  {
+    "id": "F003",
+    "name": "Mì xào hải sản",
+    "price": 35000.0,
+    "available": false
   }
 ]
