@@ -28,21 +28,19 @@
 
 ---
 
-## 📋 Hướng Dẫn Chạy Dự Án
+## 📋 Hướng Dẫn Khởi Động Dự Án
 
 ### Yêu cầu môi trường:
 - Java JDK 17 trở lên.
 - IntelliJ IDEA, Eclipse, VS Code hoặc Maven.
 
 ### Các bước khởi động:
-1. **Mở dự án:** Nạp dự án vào IntelliJ IDEA (hoặc IDE tương đương).
-2. **Chạy Server Backend:** 
-   - Mở file `backend/src/main/java/Main.java`.
-   - Bấm nút **Run** (hoặc tổ hợp phím `Shift + F10`).
-   - Server sẽ tự động mở tại đường dẫn `http://localhost:8080` và khởi tạo file SQLite DB.
-3. **Mở Trang Web Frontend:**
-   - Mở trình duyệt web bất kỳ và truy cập: `http://localhost:8080/index.html` (hoặc click đúp trực tiếp file `frontend/index.html`).
-   - Mở trang Admin quản lý bếp tại: `http://localhost:8080/admin.html` (hoặc click đúp file `frontend/admin.html`).
+1. Mở dự án bằng **IntelliJ IDEA** (hoặc IDE bất kỳ).
+2. Tìm đến file `backend/src/main/java/Main.java`.
+3. Bấm nút **Run** (hoặc nhấn tổ hợp phím `Shift + F10`).
+4. Hệ thống sẽ tự động khởi chạy Server tại cổng `8080`, khởi tạo CSDL SQLite và **tự động bật trình duyệt web** truy cập địa chỉ:
+   - **Trang Sinh Viên:** `http://localhost:8080/index.html`
+   - **Trang Admin Nhà Bếp:** `http://localhost:8080/admin.html`
 
 ---
 
