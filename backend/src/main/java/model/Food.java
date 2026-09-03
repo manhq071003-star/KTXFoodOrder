@@ -4,17 +4,16 @@ public class Food {
     private String id;
     private String name;
     private double price;
+    private String imageUrl;
     private boolean available;
 
     public Food() {}
 
-    public Food(String id, String name, double price, boolean available) {
-        if (price < 0) {
-            throw new IllegalArgumentException("Giá món ăn không được âm.");
-        }
+    public Food(String id, String name, double price, String imageUrl, boolean available) {
         this.id = id;
         this.name = name;
         this.price = price;
+        this.imageUrl = imageUrl;
         this.available = available;
     }
 
@@ -25,12 +24,10 @@ public class Food {
     public void setName(String name) { this.name = name; }
 
     public double getPrice() { return price; }
-    public void setPrice(double price) {
-        if (price < 0) {
-            throw new IllegalArgumentException("Giá món ăn không được âm.");
-        }
-        this.price = price;
-    }
+    public void setPrice(double price) { this.price = price; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public boolean isAvailable() { return available; }
     public void setAvailable(boolean available) { this.available = available; }

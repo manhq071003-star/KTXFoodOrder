@@ -5,64 +5,291 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KTX FoodExpress - Hệ Thống Đặt Đồ Ăn KTX</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
+<div id="toast-container"></div>
 
-<div class="container">
-    <h1 class="header-title">🍔 KTX <span>FoodExpress</span></h1>
-
-    <div class="user-card">
-        <div class="user-info">
-            <h3 id="sv-name">Đang tải...</h3>
-            <p>Mã SV: <span id="sv-id">SV001</span> | Phòng: <span id="sv-room">--</span></p>
-        </div>
-        <div class="user-balance">
-            <label>Số dư Ví Sinh Viên</label>
-            <strong id="sv-balance">0</strong> VNĐ
+<header class="header">
+    <div class="header-left">
+        <div class="logo">
+            <i class="fa-solid fa-utensils"></i>
+            <span>KTX <strong>FoodExpress</strong></span>
         </div>
     </div>
 
-    <div class="main-layout">
-        <div class="section-card">
-            <div class="section-header">
-                <h2 class="section-title">Thực Đơn Hôm Nay</h2>
-            </div>
-            <input type="text" id="search-box" class="search-input" placeholder="🔍 Tìm kiếm món ăn ngon..." onkeyup="searchFood()">
-            <div id="food-list" class="food-grid"></div>
+    <div class="header-right">
+        <a href="admin.html" class="btn-admin-link">
+            <i class="fa-solid fa-kitchen-set"></i> Bếp KTX Admin
+        </a>
+
+        <button class="btn-wheel" onclick="openWheelModal()">
+            <i class="fa-solid fa-dharmachakra"></i> Vòng Quay May Mắn
+        </button>
+
+        <button id="theme-btn" class="theme-toggle" onclick="toggleTheme()">
+            <i class="fa-solid fa-moon"></i>
+        </button>
+
+        <div id="auth-buttons">
+            <button class="btn-login" onclick="openLoginModal()">Đăng nhập Sinh Viên</button>
         </div>
 
-        <div class="section-card">
-            <div class="section-header">
-                <h2 class="section-title">Giỏ Hàng Của Bạn 🛒</h2>
+        <div id="user-info" class="user-profile" style="display: none;">
+            <i class="fa-solid fa-circle-user avatar-icon"></i>
+            <div class="user-details">
+                <span id="sv-name" class="sv-name">--</span>
+                <small>MSSV: <span id="sv-id">--</span> | Phòng: <span id="sv-room">--</span></small>
+            </div>
+            <div class="wallet-badge" onclick="openWalletHistoryModal()">
+                <i class="fa-solid fa-wallet"></i>
+                <span id="sv-balance">0 VNĐ</span>
+            </div>
+            <button class="btn-topup" onclick="openTopupModal()"><i class="fa-solid fa-plus"></i> Nạp tiền</button>
+            <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <main class="menu-section">
+        <div class="search-sort-bar">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-input" placeholder="Tìm kiếm món ăn, trà sữa..." onkeyup="filterFoods()">
+            </div>
+            <select id="sort-select" class="sort-select" onchange="filterFoods()">
+                <option value="DEFAULT">Mới nhất</option>
+                <option value="ASC">Giá: Thấp đến Cao</option>
+                <option value="DESC">Giá: Cao đến Thấp</option>
+            </select>
+        </div>
+
+        <div class="category-tabs">
+            <button class="tab-btn active" onclick="filterCategory('ALL', this)">🔥 Tất cả</button>
+            <button class="tab-btn" onclick="filterCategory('SMART', this)">💡 Gợi Ý Theo Giờ</button>
+            <button class="tab-btn" onclick="filterCategory('COMBO', this)">🎁 Combo Phòng KTX</button>
+            <button class="tab-btn" onclick="filterCategory('COM', this)">🍚 Cơm & Trưa</button>
+            <button class="tab-btn" onclick="filterCategory('BUN', this)">🍜 Bún & Mì</button>
+            <button class="tab-btn" onclick="filterCategory('DRINK', this)">🧋 Đồ Uống</button>
+            <button class="tab-btn" onclick="filterCategory('FAV', this)">❤️ Yêu Thích</button>
+        </div>
+
+        <h2 class="section-title"><i class="fa-solid fa-utensils"></i> Thực Đơn Hôm Nay</h2>
+        <div id="food-list" class="food-grid"></div>
+
+        <h2 class="section-title" style="margin-top: 35px;"><i class="fa-solid fa-clock-rotate-left"></i> Tiến Trình Đơn Hàng Gần Đây</h2>
+        <div id="history-list" class="history-container">
+            <p class="empty-text">Chưa có đơn hàng nào trong phiên làm việc này.</p>
+        </div>
+    </main>
+
+    <aside class="cart-section">
+        <div class="cart-card">
+            <div class="cart-header">
+                <h3><i class="fa-solid fa-cart-shopping"></i> Giỏ Hàng <span id="cart-count-badge" class="badge">0</span></h3>
+                <button class="btn-clear" onclick="clearCart()"><i class="fa-solid fa-trash-can"></i> Xóa hết</button>
             </div>
 
-            <table class="cart-table">
-                <thead>
-                <tr>
-                    <th>Món</th>
-                    <th>SL</th>
-                    <th>Thành tiền</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody id="cart-items"></tbody>
-            </table>
+            <div id="cart-items" class="cart-items-list">
+                <p class="empty-text">Vui lòng đăng nhập để xem giỏ hàng</p>
+            </div>
 
-            <div class="checkout-box">
-                <div class="total-row">
-                    <span>Tổng thanh toán:</span>
-                    <span id="cart-total" class="total-price">0 VNĐ</span>
+            <div class="cart-summary">
+                <div class="delivery-info">
+                    <label><i class="fa-solid fa-location-dot"></i> Địa điểm giao phòng:</label>
+                    <div class="room-inputs">
+                        <select id="building-select">
+                            <option value="A">Tòa A</option>
+                            <option value="B">Tòa B</option>
+                            <option value="C">Tòa C</option>
+                        </select>
+                        <input type="text" id="room-input" placeholder="Số phòng (VD: A101)">
+                    </div>
                 </div>
 
-                <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Hình thức thanh toán:</label>
-                <select id="payment-method" class="payment-select">
-                    <option value="WALLET">💳 Ví sinh viên</option>
-                    <option value="CASH">💵 Tiền mặt khi nhận hàng</option>
-                    <option value="BANK">🏦 Chuyển khoản ngân hàng</option>
-                </select>
+                <div class="delivery-time-box">
+                    <label><i class="fa-solid fa-clock"></i> Khung giờ giao:</label>
+                    <select id="delivery-time">
+                        <option value="ASAP">⚡ Giao ngay (15 - 20 phút)</option>
+                        <option value="11:30">Trưa (11:30)</option>
+                        <option value="17:30">Tối (17:30)</option>
+                        <option value="22:00">Đêm (22:00)</option>
+                    </select>
+                </div>
 
-                <button onclick="checkout()" class="btn-checkout">XÁC NHẬN ĐẶT HÀNG</button>
+                <div class="order-note-box">
+                    <input type="text" id="order-note" placeholder="Ghi chú cho bếp (VD: Không cay, nhiều hành)...">
+                </div>
+
+                <div class="cart-voucher">
+                    <input type="text" id="voucher-code" placeholder="Mã ưu đãi (VD: KTXFREESHIP)">
+                    <button class="btn-apply" onclick="applyVoucher()">Áp dụng</button>
+                </div>
+                <button class="btn-spin-wheel" style="background: #8b5cf6; margin-top: 8px;" onclick="openVoucherWalletModal()">
+                    <i class="fa-solid fa-ticket"></i> Kho Voucher Của Tôi (<span id="voucher-count">0</span>)
+                </button>
+
+                <div class="summary-line"><span>Tạm tính:</span><span id="cart-subtotal">0 VNĐ</span></div>
+                <div class="summary-line"><span>Giảm giá:</span><span id="cart-discount" style="color:#10b981;">-0 VNĐ</span></div>
+                <div class="summary-line total-line"><span>Tổng thanh toán:</span><span id="cart-total">0 VNĐ</span></div>
+
+                <div class="payment-method-box">
+                    <label><i class="fa-solid fa-credit-card"></i> Phương thức thanh toán:</label>
+                    <select id="payment-method">
+                        <option value="WALLET">💳 Ví Sinh Viên KTX (Tự động trừ)</option>
+                        <option value="BANK">📲 Chuyển Khoản QR (VietQR)</option>
+                        <option value="CASH">💵 Tiền Mặt Khi Nhận Món</option>
+                    </select>
+                </div>
+
+                <button class="btn-checkout" onclick="checkout()"><i class="fa-solid fa-check"></i> XÁC NHẬN ĐẶT MÓN</button>
             </div>
+        </div>
+    </aside>
+</div>
+
+<!-- MODAL ĐĂNG NHẬP -->
+<div id="login-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-user-gear"></i> Đăng Nhập Sinh Viên KTX</h3>
+            <span class="close-btn" onclick="closeModal('login-modal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <label>Nhập Mã Sinh Viên (MSSV):</label>
+            <input type="text" id="login-id" placeholder="VD: SV001, SV002..." style="width: 100%; padding: 10px; margin-top: 6px; border-radius: 8px; border: 1px solid var(--border-color);">
+        </div>
+        <div class="modal-footer">
+            <button class="btn-checkout" onclick="handleLogin()">Đăng nhập ngay</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL VÒNG QUAY MAY MẮN (CANVAS XE XOAY) -->
+<div id="wheel-modal" class="modal">
+    <div class="modal-content" style="text-align: center; max-width: 420px;">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-dharmachakra" style="color: #ff5722;"></i> Vòng Quay May Mắn KTX</h3>
+            <span class="close-btn" onclick="closeModal('wheel-modal')">&times;</span>
+        </div>
+        <div class="modal-body" style="display: flex; flex-direction: column; align-items: center;">
+            <p style="font-size: 12px; color: #666; margin-bottom: 12px;">Xoay bánh xe để săn Voucher giảm giá tự động lưu vào Kho!</p>
+            <div style="position: relative; width: 280px; height: 280px; margin-bottom: 15px;">
+                <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 18px solid #ef4444; z-index: 10;"></div>
+                <canvas id="wheel-canvas" width="280" height="280" style="border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: transform 4s cubic-bezier(0.15, 0.99, 0.18, 1);"></canvas>
+            </div>
+            <div id="wheel-display" style="font-size: 15px; font-weight: bold; color: var(--primary-color); margin-bottom: 12px; min-height: 22px;">
+                🎯 Bấm QUAY NGAY để nhận quà
+            </div>
+            <button id="btn-spin" class="btn-checkout" onclick="spinWheel()">🎉 QUAY NGAY</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL KHO VOUCHER -->
+<div id="voucher-wallet-modal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-ticket" style="color: #8b5cf6;"></i> Kho Voucher Của Tôi</h3>
+            <span class="close-btn" onclick="closeModal('voucher-wallet-modal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div id="voucher-wallet-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto;"></div>
+        </div>
+        <div class="modal-footer" style="margin-top: 15px; text-align: right;">
+            <button class="btn-secondary" onclick="closeModal('voucher-wallet-modal')">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CHI TIẾT MÓN ĂN & TOPPING -->
+<div id="food-detail-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Chi Tiết Món Ăn</h3>
+            <span class="close-btn" onclick="closeModal('food-detail-modal')">&times;</span>
+        </div>
+        <div class="modal-body" id="food-detail-body"></div>
+        <div class="modal-footer">
+            <button class="btn-checkout" onclick="addCurrentFoodWithToppings()">Cập Nhật Giỏ Hàng</button>
+            <button class="btn-secondary" onclick="closeModal('food-detail-modal')">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL NẠP TIỀN -->
+<div id="topup-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-wallet"></i> Nạp Tiền Vào Ví KTX</h3>
+            <span class="close-btn" onclick="closeModal('topup-modal')">&times;</span>
+        </div>
+        <div class="modal-body" style="text-align: center;">
+            <p style="font-size: 13px; color: #666; margin-bottom: 12px;">Chọn nhanh mệnh giá cần nạp vào tài khoản sinh viên:</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button class="btn-topup-option" onclick="topupBalance(20000)">+20.000 VNĐ</button>
+                <button class="btn-topup-option" onclick="topupBalance(50000)">+50.000 VNĐ</button>
+                <button class="btn-topup-option" onclick="topupBalance(100000)">+100.000 VNĐ</button>
+                <button class="btn-topup-option" onclick="topupBalance(200000)">+200.000 VNĐ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL LỊCH SỬ VÍ TIỀN -->
+<div id="wallet-history-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-clock-rotate-left"></i> Biến Động Số Dư Ví KTX</h3>
+            <span class="close-btn" onclick="closeModal('wallet-history-modal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div id="wallet-history-list" class="wallet-history-list"></div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL HÓA ĐƠN XÁC NHẬN -->
+<div id="order-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Đặt Hàng Thành Công!</h3>
+            <span class="close-btn" onclick="closeModal('order-modal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div id="invoice-details"></div>
+            <div id="qr-box" style="display:none; text-align:center; margin-top:15px;">
+                <p style="font-size:12px; color:#666;">Quét mã VietQR để thanh toán cho nhà bếp:</p>
+                <img id="vietqr-img" src="" alt="VietQR" style="width:180px; border-radius:8px; border:1px solid #ddd;">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-checkout" onclick="closeModal('order-modal')">Theo dõi đơn hàng</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ĐÁNH GIÁ MÓN ĂN -->
+<div id="review-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Đánh Giá Món Ăn Bếp KTX</h3>
+            <span class="close-btn" onclick="closeModal('review-modal')">&times;</span>
+        </div>
+        <div class="modal-body" style="text-align: center;">
+            <p id="review-order-id" style="font-weight: bold; margin-bottom: 10px;"></p>
+            <div style="font-size: 24px; color: #fbc02d; margin-bottom: 15px;">
+                <i class="fa-solid fa-star star-btn" onclick="setRating(1)"></i>
+                <i class="fa-solid fa-star star-btn" onclick="setRating(2)"></i>
+                <i class="fa-solid fa-star star-btn" onclick="setRating(3)"></i>
+                <i class="fa-solid fa-star star-btn" onclick="setRating(4)"></i>
+                <i class="fa-solid fa-star star-btn" onclick="setRating(5)"></i>
+            </div>
+            <textarea id="review-text" placeholder="Hãy để lại ý kiến đóng góp cho nhà bếp nhé..." style="width: 100%; height: 80px; padding: 8px; border-radius: 8px; border: 1px solid var(--border-color);"></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-checkout" onclick="submitReview()">Gửi Đánh Giá</button>
         </div>
     </div>
 </div>

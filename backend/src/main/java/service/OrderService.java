@@ -3,53 +3,58 @@ package service;
 import model.*;
 import repository.OrderRepository;
 import utils.CodeGenerator;
-import utils.CustomExceptions.EmptyCartException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class OrderService {
-    private final OrderRepository orderRepository = new OrderRepository();
+    private final CartService cartService;
     private final StudentService studentService = new StudentService();
-    private final CartService cartService = new CartService();
     private final PaymentService paymentService = new PaymentService();
+    private final OrderRepository orderRepository = new OrderRepository();
 
-    public Order checkout(String studentId, String paymentTypeCode) {
+    public OrderService(CartService cartService) {
+        this.cartService = cartService;
+    }
+
+    public synchronized Order createOrder(String studentId, String paymentType, double discountAmount) {
         Cart cart = cartService.getCart(studentId);
         if (cart.getItems().isEmpty()) {
-            throw new EmptyCartException("Không thể đặt hàng khi giỏ hàng rỗng.");
+            throw new IllegalStateException("Giỏ hàng rỗng");
         }
 
         Student student = studentService.getStudent(studentId);
-        PaymentMethod paymentMethod = paymentService.getPaymentMethod(paymentTypeCode);
 
-        double total = cart.getTotalAmount();
+        // Tính tổng tiền chính xác: Lấy tổng giỏ hàng trừ đi số tiền giảm giá
+        double total = Math.max(0, cart.getTotalAmount() - discountAmount);
 
-        paymentMethod.processPayment(student, total);
+        // Xử lý thanh toán theo phương thức đã chọn
+        PaymentMethod method = paymentService.getMethod(paymentType);
+        method.processPayment(student, total);
+        studentService.updateStudent(student);
 
+        // Chuyển đổi các món ăn trong giỏ hàng thành chi tiết đơn hàng (OrderDetail)
         List<OrderDetail> details = new ArrayList<>();
-        for (CartItem item : cart.getItems()) {
-            details.add(new OrderDetail(item.getFood().getName(), item.getFood().getPrice(), item.getQuantity()));
+        for (CartItem ci : cart.getItems()) {
+            details.add(new OrderDetail(
+                    ci.getFood().getId(),
+                    ci.getFood().getName(),
+                    ci.getFood().getPrice(),
+                    ci.getQuantity()
+            ));
         }
 
+        // Tạo đơn hàng và lưu vào cơ sở dữ liệu JSON
         Order order = new Order(
-                CodeGenerator.generateOrderId(),
+                CodeGenerator.generateOrderCode(),
                 studentId,
-                CodeGenerator.getCurrentTimestamp(),
                 details,
                 total,
-                paymentMethod.getMethodName(),
-                "Đã thanh toán"
+                method.getMethodName()
         );
 
-        studentService.updateStudent(student);
-        orderRepository.saveOrder(order);
-        cart.clear();
-
+        orderRepository.save(order);
+        cartService.clearCart(studentId);
         return order;
-    }
-
-    public List<Order> getAllOrders() {
-        return orderRepository.getAllOrders();
     }
 }

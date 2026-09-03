@@ -1,61 +1,34 @@
 package repository;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import model.Order;
+import utils.GsonUtils;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class OrderRepository {
-    private static final String FILE_PATH = "backend/data/orders.json";
-    private final Gson gson = new Gson();
-
-    public List<Order> loadAll() {
-        File file = new File(FILE_PATH);
-        if (!file.exists()) {
-            file = new File("orders.json");
-        }
-        if (!file.exists()) {
-            return new ArrayList<>();
-        }
-
-        try (FileReader reader = new FileReader(file)) {
-            Type listType = new TypeToken<ArrayList<Order>>(){}.getType();
-            List<Order> orders = gson.fromJson(reader, listType);
-            return orders != null ? orders : new ArrayList<>();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+    private File getFile() {
+        File f = new File("backend/data/orders.json");
+        return f.exists() ? f : new File("data/orders.json");
     }
 
-    public List<Order> getAllOrders() {
-        return loadAll();
+    public synchronized List<Order> findAll() {
+        File f = getFile();
+        if (!f.exists()) return new ArrayList<>();
+        try (FileReader r = new FileReader(f)) {
+            Type type = new TypeToken<ArrayList<Order>>(){}.getType();
+            List<Order> list = GsonUtils.getGson().fromJson(r, type);
+            return list != null ? list : new ArrayList<>();
+        } catch (IOException e) { return new ArrayList<>(); }
     }
 
-    public void saveAll(List<Order> orders) {
-        File file = new File(FILE_PATH);
-        File parent = file.getParentFile();
-        if (parent != null && !parent.exists()) {
-            parent.mkdirs();
-        }
-
-        try (FileWriter writer = new FileWriter(file)) {
-            gson.toJson(orders, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void saveOrder(Order order) {
-        List<Order> orders = loadAll();
-        orders.add(order);
-        saveAll(orders);
+    public synchronized void save(Order order) {
+        List<Order> list = findAll();
+        list.add(order);
+        try (FileWriter w = new FileWriter(getFile())) {
+            GsonUtils.getGson().toJson(list, w);
+        } catch (IOException e) { e.printStackTrace(); }
     }
 }

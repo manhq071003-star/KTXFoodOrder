@@ -3,30 +3,29 @@ package service;
 import model.Cart;
 import model.Food;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CartService {
-    private final Map<String, Cart> userCarts = new HashMap<>();
+    private final Map<String, Cart> carts = new ConcurrentHashMap<>();
     private final FoodService foodService = new FoodService();
 
-    public Cart getCart(String studentId) {
-        return userCarts.computeIfAbsent(studentId, Cart::new);
+    public synchronized Cart getCart(String studentId) {
+        return carts.computeIfAbsent(studentId, k -> new Cart());
     }
 
-    public void addToCart(String studentId, String foodId, int quantity) {
+    public synchronized void addToCart(String studentId, String foodId, int q) {
         Food food = foodService.getFoodById(foodId);
-        Cart cart = getCart(studentId);
-        cart.addItem(food, quantity);
+        if (food != null && food.isAvailable()) {
+            getCart(studentId).addItem(food, q);
+        }
     }
 
-    public void updateQuantity(String studentId, String foodId, int quantity) {
-        Cart cart = getCart(studentId);
-        cart.updateQuantity(foodId, quantity);
+    public synchronized void removeFromCart(String studentId, String foodId) {
+        getCart(studentId).removeItem(foodId);
     }
 
-    public void removeFromCart(String studentId, String foodId) {
-        Cart cart = getCart(studentId);
-        cart.removeItem(foodId);
+    public synchronized void clearCart(String studentId) {
+        getCart(studentId).clear();
     }
 }

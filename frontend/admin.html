@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KTX FoodExpress - Trang Quản Lý Nhà Bếp</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .admin-header { background: #1e293b; color: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+        .stat-card { background: var(--card-bg); padding: 18px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .stat-card h3 { font-size: 22px; color: var(--primary-color); margin-top: 5px; }
+        .admin-table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); }
+        .admin-table th, .admin-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 13px; }
+        .admin-table th { background: var(--bg-color); font-weight: bold; }
+
+        .toggle-btn { padding: 5px 10px; border-radius: 6px; border: none; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .toggle-btn.active { background: #10b981; color: white; }
+        .toggle-btn.inactive { background: #ef4444; color: white; }
+
+        .btn-edit { background: #3b82f6; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; margin-right: 4px; }
+        .btn-delete { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+
+        .add-food-card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 25px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 10px; }
+        .form-grid input { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 12px; }
+
+        .filter-building-bar { display: flex; gap: 10px; margin-bottom: 15px; }
+        .filter-building-bar button { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; font-size: 12px; font-weight: bold; }
+        .filter-building-bar button.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+    </style>
+</head>
+<body>
+<header class="admin-header">
+    <div class="logo" style="color: white;">
+        <i class="fa-solid fa-kitchen-set"></i>
+        <span>Bếp KTX <strong>Express Admin</strong></span>
+    </div>
+    <div>
+        <a href="index.html" style="color: white; text-decoration: none; font-size: 13px; font-weight: bold;"><i class="fa-solid fa-house"></i> Xem Trang Sinh Viên</a>
+    </div>
+</header>
+
+<div class="container" style="display: block; max-width: 1200px;">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <small>Tổng Doanh Thu Phục Vụ</small>
+            <h3 id="stat-revenue">0 VNĐ</h3>
+        </div>
+        <div class="stat-card">
+            <small>Tổng Số Đơn Hàng</small>
+            <h3 id="stat-orders">0 Đơn</h3>
+        </div>
+        <div class="stat-card">
+            <small>Món Ăn Đang Bán</small>
+            <h3 id="stat-foods">0 Món</h3>
+        </div>
+    </div>
+
+    <div class="add-food-card">
+        <h3><i class="fa-solid fa-plus-circle" style="color: var(--primary-color);"></i> Thêm Món Ăn Mới Vào Thực Đơn</h3>
+        <div class="form-grid">
+            <input type="text" id="new-food-id" placeholder="Mã món (VD: F14)">
+            <input type="text" id="new-food-name" placeholder="Tên món ăn">
+            <input type="number" id="new-food-price" placeholder="Đơn giá (VNĐ)">
+            <input type="text" id="new-food-img" placeholder="Link hình ảnh (URL Unsplash)">
+            <button class="btn-checkout" style="padding: 8px; font-size: 13px;" onclick="addNewFoodAdmin()">Thêm Món Ngay</button>
+        </div>
+    </div>
+
+    <h2 class="section-title"><i class="fa-solid fa-utensils"></i> Danh Sách Thực Đơn Món Ăn</h2>
+    <table class="admin-table">
+        <thead>
+        <tr>
+            <th>Mã Món</th>
+            <th>Tên Món Ăn</th>
+            <th>Đơn Giá</th>
+            <th>Trạng Thái</th>
+            <th>Hành Động Quản Lý</th>
+        </tr>
+        </thead>
+        <tbody id="admin-food-list"></tbody>
+    </table>
+</div>
+
+<script>
+    const API_BASE = "http://localhost:8080/api";
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadAdminData();
+    });
+
+    function loadAdminData() {
+        fetch(`${API_BASE}/foods`)
+            .then(res => res.json())
+            .then(foods => {
+                const activeCount = foods.filter(f => f.available !== false).length;
+                document.getElementById("stat-foods").innerText = activeCount + " / " + foods.length + " Món";
+
+                const fList = document.getElementById("admin-food-list");
+                fList.innerHTML = "";
+                foods.forEach(f => {
+                    const isAvail = f.available !== false;
+                    fList.innerHTML += `
+                            <tr>
+                                <td><strong>${f.id}</strong></td>
+                                <td><strong>${f.name}</strong></td>
+                                <td>${f.price.toLocaleString()} VNĐ</td>
+                                <td><span style="color:${isAvail ? '#10b981' : '#ef4444'}; font-weight:bold;">${isAvail ? '✓ Đang mở bán' : '✕ Hết hàng'}</span></td>
+                                <td>
+                                    <button class="toggle-btn ${isAvail ? 'inactive' : 'active'}" onclick="toggleStatusAdmin('${f.id}', ${!isAvail})">
+                                        ${isAvail ? 'Báo hết hàng' : 'Mở bán lại'}
+                                    </button>
+                                    <button class="btn-edit" onclick="editPriceAdmin('${f.id}', ${f.price})">Sửa giá</button>
+                                    <button class="btn-delete" onclick="deleteFoodAdmin('${f.id}')">Xóa</button>
+                                </td>
+                            </tr>
+                        `;
+                });
+            });
+    }
+
+    function addNewFoodAdmin() {
+        const id = document.getElementById("new-food-id").value.trim();
+        const name = document.getElementById("new-food-name").value.trim();
+        const price = parseFloat(document.getElementById("new-food-price").value);
+        const img = document.getElementById("new-food-img").value.trim();
+
+        if (!id || !name || !price) {
+            alert("Vui lòng nhập đầy đủ thông tin Món ăn!");
+            return;
+        }
+
+        fetch(`${API_BASE}/foods`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: id,
+                name: name,
+                price: price,
+                imageUrl: img || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80"
+            })
+        }).then(() => {
+            alert("Đã thêm món mới thành công!");
+            document.getElementById("new-food-id").value = "";
+            document.getElementById("new-food-name").value = "";
+            document.getElementById("new-food-price").value = "";
+            document.getElementById("new-food-img").value = "";
+            loadAdminData();
+        });
+    }
+
+    function toggleStatusAdmin(id, newStatus) {
+        fetch(`${API_BASE}/foods?id=${id}&available=${newStatus}`, { method: "PUT" })
+            .then(() => loadAdminData());
+    }
+
+    function editPriceAdmin(id, currentPrice) {
+        const newPrice = prompt("Nhập giá tiền mới:", currentPrice);
+        if (newPrice && !isNaN(newPrice)) {
+            fetch(`${API_BASE}/foods?id=${id}&price=${newPrice}`, { method: "PUT" })
+                .then(() => loadAdminData());
+        }
+    }
+
+    function deleteFoodAdmin(id) {
+        if (confirm("Bạn có chắc chắn muốn xóa món này khỏi hệ thống?")) {
+            fetch(`${API_BASE}/foods?id=${id}`, { method: "DELETE" })
+                .then(() => loadAdminData());
+        }
+    }
+</script>
+</body>
+</html>

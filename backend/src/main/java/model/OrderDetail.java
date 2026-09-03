@@ -1,26 +1,23 @@
 package model;
 
 public class OrderDetail {
+    private String foodId;
     private String foodName;
-    private double price;
+    private double unitPrice;
     private int quantity;
-    private double subtotal;
 
     public OrderDetail() {}
 
-    public OrderDetail(String foodName, double price, int quantity) {
+    public OrderDetail(String foodId, String foodName, double unitPrice, int quantity) {
+        this.foodId = foodId;
         this.foodName = foodName;
-        this.price = price;
+        this.unitPrice = unitPrice;
         this.quantity = quantity;
-        this.subtotal = price * quantity;
     }
 
+    public String getFoodId() { return foodId; }
     public String getFoodName() { return foodName; }
-    public void setFoodName(String foodName) { this.foodName = foodName; }
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
+    public double getUnitPrice() { return unitPrice; }
     public int getQuantity() { return quantity; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
-    public double getSubtotal() { return subtotal; }
-    public void setSubtotal(double subtotal) { this.subtotal = subtotal; }
+    public double getSubtotal() { return unitPrice * quantity; }
 }

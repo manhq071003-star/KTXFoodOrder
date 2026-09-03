@@ -1,4 +1,16 @@
 [
-  { "id": "SV001", "name": "Nguyễn Văn A", "phone": "0987654321", "room": "A101", "balance": 100000.0 },
-  { "id": "SV002", "name": "Trần Thị B", "phone": "0912345678", "room": "B205", "balance": 20000.0 }
+  {
+    "room": "A101",
+    "balance": 650000.0,
+    "id": "SV001",
+    "name": "Nguyễn Văn A",
+    "phone": "0987654321"
+  },
+  {
+    "room": "B205",
+    "balance": 50000.0,
+    "id": "SV002",
+    "name": "Trần Thị B",
+    "phone": "0912345678"
+  }
 ]

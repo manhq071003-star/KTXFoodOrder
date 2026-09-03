@@ -1,26 +1,21 @@
 package service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class PaymentService {
     private final Map<String, PaymentMethod> methods = new HashMap<>();
 
     public PaymentService() {
-        registerMethod(new WalletPayment());
-        registerMethod(new CashPayment());
-        registerMethod(new BankTransferPayment());
+        register(new WalletPayment());
+        register(new CashPayment());
+        register(new BankTransferPayment());
     }
 
-    private void registerMethod(PaymentMethod method) {
-        methods.put(method.getTypeCode().toUpperCase(), method);
-    }
+    private void register(PaymentMethod m) { methods.put(m.getTypeCode().toUpperCase(), m); }
 
-    public PaymentMethod getPaymentMethod(String typeCode) {
-        PaymentMethod method = methods.get(typeCode.toUpperCase());
-        if (method == null) {
-            throw new IllegalArgumentException("Phương thức thanh toán không hợp lệ: " + typeCode);
-        }
-        return method;
+    public PaymentMethod getMethod(String type) {
+        PaymentMethod m = methods.get(type.toUpperCase());
+        if (m == null) throw new IllegalArgumentException("Phương thức không hợp lệ");
+        return m;
     }
 }

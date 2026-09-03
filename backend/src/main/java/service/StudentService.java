@@ -2,17 +2,14 @@ package service;
 
 import model.Student;
 import repository.StudentRepository;
-import utils.CustomExceptions.ResourceNotFoundException;
+import utils.CustomExceptions.NotFoundException;
 
 public class StudentService {
-    private final StudentRepository studentRepository = new StudentRepository();
+    private final StudentRepository repo = new StudentRepository();
 
     public Student getStudent(String id) {
-        return studentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sinh viên mã: " + id));
+        return repo.findById(id).orElseThrow(() -> new NotFoundException("Không tìm thấy sinh viên"));
     }
 
-    public void updateStudent(Student student) {
-        studentRepository.update(student);
-    }
+    public void updateStudent(Student student) { repo.update(student); }
 }
