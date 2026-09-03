@@ -1,5 +1,7 @@
 package utils;
 
 public class GsonUtils {
-    // TODO: Viết hàm tiện ích chuyển đổi JSON
+    public static String toJson(Object obj) {
+        return obj.toString();
+    }
 }

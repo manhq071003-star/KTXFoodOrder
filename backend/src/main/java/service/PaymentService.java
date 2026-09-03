@@ -1,5 +1,7 @@
 package service;
 
 public class PaymentService {
-    // TODO: Điều hướng hình thức thanh toán
+    public boolean executePayment(PaymentMethod method, double amount) {
+        return method.processPayment(amount);
+    }
 }

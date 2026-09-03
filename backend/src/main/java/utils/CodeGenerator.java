@@ -1,5 +1,13 @@
 package utils;
 
+import java.util.Random;
+
 public class CodeGenerator {
-    // TODO: Viết hàm tự động sinh mã Đơn hàng / mã OTP
+    public static String generateOTP() {
+        return String.format("%04d", new Random().nextInt(10000));
+    }
+
+    public static String generateOrderId() {
+        return "ORD" + System.currentTimeMillis();
+    }
 }

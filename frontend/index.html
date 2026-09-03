@@ -2,11 +2,70 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>KTX FoodExpress</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KTX FoodExpress - Hệ Thống Đặt Đồ Ăn KTX</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-<!-- TODO: Khung HTML trang Đặt món cho Sinh viên -->
+<header class="navbar">
+    <div class="logo"><i class="fa-solid fa-utensils"></i> KTX FoodExpress</div>
+    <div class="nav-right">
+        <a href="admin.html" class="btn-admin"><i class="fa-solid fa-kitchen-set"></i> Bếp KTX Admin</a>
+        <button class="btn-wheel" onclick="openWheelModal()"><i class="fa-solid fa-award"></i> Vòng Quay May Mắn</button>
+        <div class="user-info">
+            <i class="fa-solid fa-circle-user"></i>
+            <span id="student-name">Trần Thị B</span>
+            <span class="balance" id="student-balance">180.000 VNĐ</span>
+            <button class="btn-topup" onclick="openTopUpModal()"><i class="fa-solid fa-wallet"></i> Nạp tiền</button>
+        </div>
+    </div>
+</header>
+
+<main class="container">
+    <section class="menu-section">
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Tìm kiếm món ăn, trà sữa..." onkeyup="filterFoods()">
+        </div>
+        <h2>🍴 Thực Đơn Hôm Nay</h2>
+        <div class="food-grid" id="food-grid"></div>
+    </section>
+
+    <aside class="cart-section">
+        <h3>🛒 Giỏ Hàng</h3>
+        <div id="cart-items" class="cart-items">
+            <p class="empty-msg">Chưa có món nào trong giỏ hàng</p>
+        </div>
+        <div class="cart-summary">
+            <div class="summary-line"><span>Tạm tính:</span><span id="subtotal">0 VNĐ</span></div>
+            <div class="summary-line"><span>Giảm giá:</span><span id="discount">0 VNĐ</span></div>
+            <div class="summary-line total"><span>Tổng thanh toán:</span><span id="total-price">0 VNĐ</span></div>
+            <button class="btn-checkout" onclick="checkout()"><i class="fa-solid fa-check-double"></i> XÁC NHẬN ĐẶT MÓN</button>
+        </div>
+
+        <!-- Bản đồ Shipper di chuyển real-time -->
+        <div id="shipper-tracker" class="shipper-box" style="display:none; margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
+            <h4>🛵 Shipper Tracker Real-time</h4>
+            <div class="map-container" style="position:relative; width:100%; height:120px; background:#e0e0e0; border-radius:8px; margin-top:10px; overflow:hidden;">
+                <div style="position:absolute; left:10px; top:45px;">🍳 Bếp</div>
+                <div style="position:absolute; right:10px; top:45px;">🏢 KTX</div>
+                <div id="shipper-icon" style="position:absolute; left:10px; top:40px; font-size:24px; transition: left 1s linear;">🛵</div>
+            </div>
+            <p id="shipper-status" style="font-size:12px; color:#555; margin-top:8px; text-align:center;">Mã OTP: <b id="otp-code">1234</b> | Đang chuẩn bị món...</p>
+        </div>
+    </aside>
+</main>
+
+<!-- Modal Vòng Quay Canvas -->
+<div id="wheel-modal" class="modal" style="display:none;">
+    <div class="modal-content" style="text-align:center;">
+        <span class="close-btn" onclick="closeWheelModal()">&times;</span>
+        <h3>🎡 Vòng Quay May Mắn nhận Voucher</h3>
+        <canvas id="wheel-canvas" width="300" height="300" style="margin:15px 0;"></canvas><br>
+        <button class="btn-checkout" onclick="spinWheel()">QUAY NGAY</button>
+    </div>
+</div>
+
 <script src="app.js"></script>
 </body>
 </html>

@@ -1,5 +1,7 @@
 package utils;
 
 public class ValidationUtils {
-    // TODO: Viết hàm kiểm tra định dạng dữ liệu đầu vào
+    public static boolean isValidStudentId(String id) {
+        return id != null && id.matches("^SV\\d{3}$");
+    }
 }
