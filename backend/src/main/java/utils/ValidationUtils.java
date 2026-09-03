@@ -1,9 +1,5 @@
 package utils;
 
 public class ValidationUtils {
-    public static void validateNotNull(Object obj, String message) {
-        if (obj == null) {
-            throw new IllegalArgumentException(message);
-        }
-    }
+    // TODO: Viết hàm kiểm tra định dạng dữ liệu đầu vào
 }

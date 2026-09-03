@@ -1,9 +1,9 @@
 package service;
 
-import model.Student;
-
 public class CashPayment implements PaymentMethod {
-    @Override public String getTypeCode() { return "CASH"; }
-    @Override public String getMethodName() { return "Tiền mặt khi nhận hàng"; }
-    @Override public void processPayment(Student student, double amount) {}
+    @Override
+    public boolean processPayment(double amount) {
+        // TODO: Xử lý thanh toán tiền mặt
+        return false;
+    }
 }
