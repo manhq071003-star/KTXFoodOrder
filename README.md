@@ -1,71 +1,50 @@
-# 🍳 KTXFoodOrder — Hệ Thống Đặt Đồ Ăn Sinh Viên KTX
+# 🛵 KTX FoodExpress - Hệ Thống Đặt Đồ Ăn KTX Thông Minh
 
-![Java](https://img.shields.io/badge/Java-17+-007396?style=for-the-badge&logo=java&logoColor=white)
-![Architecture](https://img.shields.io/badge/Architecture-3--Tier%20REST%20API-orange?style=for-the-badge)
-![Frontend](https://img.shields.io/badge/Frontend-HTML5%20%7C%20CSS3%20%7C%20JS-yellow?style=for-the-badge)
-![Database](https://img.shields.io/badge/Database-Mock%20JSON%20via%20Gson-lightgrey?style=for-the-badge)
-
-Dự án Bài tập lớn Lập trình hướng đối tượng (Java OOP) được xây dựng theo mô hình **Web Application REST API 3 tầng** chuẩn hóa. Hệ thống quản lý toàn bộ luồng đặt món, tính tiền, trừ ví sinh viên và lưu trữ lịch sử đơn hàng tự động bằng cơ chế mã hóa file JSON.
+**KTX FoodExpress** là ứng dụng web hỗ trợ sinh viên KTX đặt món ăn, trà sữa giao nhanh tận phòng, đồng thời hỗ trợ nhà bếp KTX quản lý đơn hàng, thực đơn và thống kê doanh thu thực tế.
 
 ---
 
-## 📌 1. Kiến Trúc Hệ Thống (3-Tier Architecture)
+## 🚀 Tính Năng Nổi Bật
 
-Dự án tuân thủ nguyên tắc **Separation of Concerns (SoC)** và **Dependency Direction (Phụ thuộc 1 chiều)**:
-`Frontend Web (HTML/JS) ➔ REST Handlers ➔ Business Services ➔ Repositories ➔ Mock JSON Database`
+### 🎓 Dành cho Sinh Viên (`index.html`)
+- **Menu & Gợi ý thông minh:** Tự động gợi ý món ăn theo khung giờ (Sáng: Bánh mì/Phở; Trưa-Tối: Cơm/Bún; Đêm: Trà sữa/Ăn vặt).
+- **Vòng quay may mắn Canvas:** Xoay bánh xe nhận Voucher giảm giá tự động lưu vào **Kho Voucher Của Tôi**.
+- **Bản đồ Shipper Tracker Real-time:** Theo dõi mô phỏng vị trí xe Shipper di chuyển trực quan từ Bếp -> Cổng KTX -> Phòng Sinh viên.
+- **Xác thực OTP & Đồng hồ đếm ngược:** Đơn hàng tự động sinh mã OTP 4 số xác nhận khi nhận món và đếm ngược thời gian giao 15 phút.
+- **Tùy chọn Topping & Ví Sinh Viên:** Tự động cộng tiền topping khi chọn món, hỗ trợ thanh toán qua Ví KTX, VietQR hoặc Tiền mặt.
 
-* **Frontend (`frontend/`):** Giao diện người dùng tương tác dạng SPA (Single Page Application), xử lý `fetch()` API bất đồng bộ và render DOM linh hoạt.
-* **Backend REST API (`backend/src/`):**
-  * `handler`: Tiếp nhận HTTP Request, trích xuất tham số và phản hồi dữ liệu chuẩn `JSON`.
-  * `service`: Chứa toàn bộ Logic nghiệp vụ, xử lý Đa hình (Polymorphism) trong thanh toán và kiểm soát Exception.
-  * `repository`: Thực hiện thao tác CRUD đọc/ghi trực tiếp xuống Database file `.json` qua thư viện `Gson`.
-  * `model`: Đóng gói dữ liệu đối tượng OOP (Encapsulation, Inheritance).
-  * `utils`: Bộ công cụ sinh mã đơn hàng, Validate dữ liệu đầu vào và tập hợp Custom Exceptions.
-* **Mock Database (`backend/data/`):** Lưu trữ dữ liệu hệ thống dưới dạng file JSON tĩnh.
-
----
-
-## 🌐 2. Danh Sách REST API Endpoints
-
-| HTTP Method | API Endpoint | Tầng Backend Xử Lý | Chức Năng Trên Giao Diện Web |
-| :--- | :--- | :--- | :--- |
-| **GET** | `/api/students` | `StudentHandler` | Lấy thông tin sinh viên, phòng KTX và số dư ví hiển thị trên Header. |
-| **GET** | `/api/foods` | `FoodHandler` | Lấy toàn bộ thực đơn món ăn render dạng Card UI. |
-| **GET** | `/api/foods/search?name=` | `FoodHandler` | Tìm kiếm món ăn theo tên không phân biệt hoa/thường. |
-| **POST** | `/api/orders` | `OrderHandler` | Gửi giỏ hàng, kiểm tra Business Rules & thực hiện thanh toán. |
+### 🍳 Dành cho Nhà Bếp / Admin (`admin.html`)
+- **Quản lý Thực đơn (CRUD):** Thêm món mới, Bật/Tắt trạng thái hết hàng, Sửa đơn giá trực tiếp trên giao diện Admin.
+- **Thống kê Doanh thu Real-time:** Tự động tích lũy tổng doanh thu và hiển thị biểu đồ danh sách các món ăn bán chạy nhất.
+- **Âm thanh Chuông Báo Đơn Mới:** Tự động phát tiếng chuông thông báo ngay khi có sinh viên chốt đơn.
 
 ---
 
-## ⚙️ 3. Quy Tắc Nghiệp Vụ (5 Business Rules)
+## 🛠️ Công Nghệ Sử Dụng
 
-1. **R1 — Ngăn đặt món hết hàng:** Khóa chọn các món ăn đang có trạng thái `isAvailable = false`.
-2. **R2 — Validate số lượng:** Bắt buộc số lượng món đặt mua phải $\ge 1$.
-3. **R3 — Kiểm tra số dư ví:** Ném ngoại lệ `InsufficientBalanceException` nếu số dư ví không đủ chi trả tổng đơn.
-4. **R4 — Chặn giỏ hàng rỗng:** Ngăn xác nhận thanh toán khi giỏ hàng chưa có bất kỳ món nào.
-5. **R5 — Validate giá tiền:** Bắt lỗi dữ liệu nếu món ăn có giá trị âm ($< 0$).
+- **Backend:** Java (HTTP Server nhúng), JDBC, SQLite Database.
+- **Frontend:** HTML5, CSS3 (Flexbox/Grid, Dark Mode), JavaScript ES6+ (Canvas API, Web Audio API, LocalStorage).
+- **Database:** SQLite (`ktx_food_express.db`) - Tự động khởi tạo dữ liệu mẫu, không cần cài đặt phần mềm CSDL bên ngoài.
 
 ---
 
-## 📂 4. Cấu Trúc Cây Thư Mục Project
+## 📋 Hướng Dẫn Chạy Dự Án
 
-```text
-KTXFoodOrder/
-├── backend/                             # TẦNG BACKEND (JAVA REST API)
-│   ├── data/                            # Mock Database JSON
-│   │   ├── foods.json                   # Thực đơn món ăn KTX
-│   │   ├── orders.json                  # Lịch sử đơn hàng
-│   │   └── students.json                # Thông tin tài khoản sinh viên
-│   └── src/
-│       └── main/
-│           └── java/
-│               ├── handler/             # API Controllers (Food, Order, Student)
-│               ├── main/                # Web Server Bootstrap (MainApplication.java)
-│               ├── model/               # Object Models (User, Student, Food, Cart, Order...)
-│               ├── repository/          # JSON File Persistence Manager
-│               ├── service/             # Business Logic & Payment Polymorphism
-│               └── utils/               # Exceptions, Code Generator & Validation
-│
-└── frontend/                            # TẦNG FRONTEND (WEB UI)
-    ├── app.js                           # REST API Fetch & DOM Controller
-    ├── index.html                       # Dashboard Giao diện đặt món
-    └── style.css                        # Modern UI Styling
+### Yêu cầu môi trường:
+- Java JDK 17 trở lên.
+- IntelliJ IDEA, Eclipse, VS Code hoặc Maven.
+
+### Các bước khởi động:
+1. **Mở dự án:** Nạp dự án vào IntelliJ IDEA (hoặc IDE tương đương).
+2. **Chạy Server Backend:** 
+   - Mở file `backend/src/main/java/Main.java`.
+   - Bấm nút **Run** (hoặc tổ hợp phím `Shift + F10`).
+   - Server sẽ tự động mở tại đường dẫn `http://localhost:8080` và khởi tạo file SQLite DB.
+3. **Mở Trang Web Frontend:**
+   - Mở trình duyệt web bất kỳ và truy cập: `http://localhost:8080/index.html` (hoặc click đúp trực tiếp file `frontend/index.html`).
+   - Mở trang Admin quản lý bếp tại: `http://localhost:8080/admin.html` (hoặc click đúp file `frontend/admin.html`).
+
+---
+
+## 🔑 Tài Khoản Dùng Thử
+- **Mã Sinh Viên (MSSV):** `SV001` (Số dư sẵn: 250.000 VNĐ) hoặc `SV002` (Số dư sẵn: 180.000 VNĐ).
