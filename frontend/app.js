@@ -5,6 +5,7 @@ let cart = [];
 let foodsData = [];
 let selectedVoucherId = null;
 let discountAmount = 0;
+let pendingOrderData = null; // Lưu tạm thông tin đơn hàng chờ thanh toán QR
 
 // Kho Voucher
 let myVouchers = [
@@ -12,7 +13,7 @@ let myVouchers = [
     { id: 'v2', name: 'Giảm 10.000 VNĐ (Tri ân KTX)', value: 10000 }
 ];
 
-// Shipper KTX
+// Danh sách Shipper KTX
 const shipperList = [
     { name: "Nguyễn Văn Hoàng", phone: "0987.654.321" },
     { name: "Trần Quốc Tuấn", phone: "0912.345.678" },
@@ -29,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderVoucherDropdown();
 });
 
-// 1. TẢI DỮ LIỆU MÓN ÁN & ĐỒNG BỘ TRANG BẾP ADMIN
+// 1. TẢI DỮ LIỆU MÓN ĂN & ĐỒNG BỘ TRANG BẾP ADMIN
 function loadFoods() {
     fetch(`${API_BASE}/foods`)
         .then(res => res.json())
@@ -56,7 +57,7 @@ function refreshAllViews() {
     renderAdminTable(foodsData);
 }
 
-// CHỨC NĂNG BẾP ADMIN
+// THAO TÁC BẾP ADMIN
 function toggleFoodStatus(id) {
     const food = foodsData.find(f => f.id === id);
     if (food) {
@@ -238,7 +239,47 @@ function spinWheel() {
     requestAnimationFrame(animate);
 }
 
-// 4. ĐẶT HÀNG & XUẤT HÓA ĐƠN CHI TIẾT
+// 4. NẠP TIỀN VÀO VÍ KTX QUA VIETQR ĐỘNG
+function openTopUpModal() {
+    document.getElementById("topup-modal").style.display = "flex";
+    updateQrCode();
+}
+
+function updateQrCode() {
+    const amountSelect = document.getElementById("topup-amount");
+    if (!amountSelect) return;
+
+    const amount = amountSelect.value;
+    const memo = `NAP KTX ${currentStudentId}`;
+
+    const memoElem = document.getElementById("topup-memo");
+    if (memoElem) memoElem.innerText = memo;
+
+    const bankId = "MB";
+    const accountNo = "0987654321";
+    const accountName = "BEP KTX FOOD EXPRESS";
+
+    const qrUrl = `https://img.vietqr.io/image/${bankId}-${accountNo}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(accountName)}`;
+
+    const qrImg = document.getElementById("qr-code-img");
+    if (qrImg) qrImg.src = qrUrl;
+}
+
+function confirmTopUp() {
+    const amountSelect = document.getElementById("topup-amount");
+    if (!amountSelect) return;
+
+    const amount = parseFloat(amountSelect.value);
+    studentBalance += amount;
+
+    const balanceElem = document.getElementById("student-balance");
+    if (balanceElem) balanceElem.innerText = studentBalance.toLocaleString('vi-VN') + " VNĐ";
+
+    alert(`🎉 XÁC NHẬN THÀNH CÔNG!\nĐã nạp +${amount.toLocaleString('vi-VN')} VNĐ qua mã QR VietQR vào Ví Sinh Viên KTX.`);
+    closeModal('topup-modal');
+}
+
+// 5. ĐẶT HÀNG & LUỒNG THANH TOÁN QR -> XUẤT HÓA ĐƠN
 function checkout() {
     if (cart.length === 0) {
         alert("Giỏ hàng của bạn đang trống!");
@@ -251,6 +292,7 @@ function checkout() {
     const finalTotal = Math.max(0, subtotal - discountAmount);
 
     let paymentText = "";
+
     if (method === "wallet") {
         if (studentBalance < finalTotal) {
             alert("Số dư ví KTX không đủ! Vui lòng nạp tiền hoặc chọn hình thức COD/Chuyển khoản.");
@@ -259,30 +301,71 @@ function checkout() {
         studentBalance -= finalTotal;
         document.getElementById("student-balance").innerText = studentBalance.toLocaleString('vi-VN') + " VNĐ";
         paymentText = "Ví Sinh Viên KTX (Đã trừ)";
-    } else if (method === "bank") {
-        paymentText = "Chuyển khoản QR Ngân hàng";
     } else if (method === "cash") {
         paymentText = "Tiền mặt khi nhận hàng (COD)";
+    } else if (method === "bank") {
+        paymentText = "Chuyển khoản QR Ngân hàng";
     }
 
-    // Thông tin hóa đơn
     const orderId = "ORD" + Math.floor(100000 + Math.random() * 900000);
     const now = new Date();
     const timeString = now.toLocaleTimeString('vi-VN') + " - " + now.toLocaleDateString('vi-VN');
     const assignedShipper = shipperList[Math.floor(Math.random() * shipperList.length)];
     const otpCode = Math.floor(1000 + Math.random() * 9000);
 
-    // Điền thông tin Modal Hóa Đơn
-    document.getElementById("inv-order-id").innerText = orderId;
-    document.getElementById("inv-time").innerText = timeString;
+    pendingOrderData = {
+        orderId,
+        timeString,
+        assignedShipper,
+        otpCode,
+        subtotal,
+        finalTotal,
+        paymentText,
+        cartItems: [...cart]
+    };
+
+    // Nếu chọn QR Ngân hàng -> Hiện Modal QR trước
+    if (method === "bank") {
+        const bankId = "MB";
+        const accountNo = "0987654321";
+        const accountName = "BEP KTX FOOD EXPRESS";
+        const memo = `${orderId} ${currentStudentId}`;
+
+        const qrUrl = `https://img.vietqr.io/image/${bankId}-${accountNo}-compact2.png?amount=${finalTotal}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(accountName)}`;
+
+        document.getElementById("pay-qr-code-img").src = qrUrl;
+        document.getElementById("pay-qr-amount").innerText = finalTotal.toLocaleString('vi-VN') + " VNĐ";
+        document.getElementById("pay-qr-memo").innerText = memo;
+
+        document.getElementById("payment-qr-modal").style.display = "flex";
+        return;
+    }
+
+    // Với Ví KTX hoặc COD -> Xuất ngay hóa đơn
+    completeOrderProcess();
+}
+
+function confirmQrPayment() {
+    closeModal('payment-qr-modal');
+    completeOrderProcess();
+}
+
+function completeOrderProcess() {
+    if (!pendingOrderData) return;
+
+    const data = pendingOrderData;
+
+    // Điền thông tin Hóa đơn
+    document.getElementById("inv-order-id").innerText = data.orderId;
+    document.getElementById("inv-time").innerText = data.timeString;
     document.getElementById("inv-student-name").innerText = document.getElementById("student-name").innerText;
     document.getElementById("inv-student-id").innerText = currentStudentId;
     document.getElementById("inv-room").innerText = currentStudentId === "SV001" ? "P301" : "P205";
-    document.getElementById("inv-payment-method").innerText = paymentText;
+    document.getElementById("inv-payment-method").innerText = data.paymentText;
 
     const itemsContainer = document.getElementById("inv-items-list");
     itemsContainer.innerHTML = "";
-    cart.forEach(item => {
+    data.cartItems.forEach(item => {
         itemsContainer.innerHTML += `
             <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:5px;">
                 <span>${item.name} x${item.quantity}</span>
@@ -291,16 +374,16 @@ function checkout() {
         `;
     });
 
-    document.getElementById("inv-subtotal").innerText = subtotal.toLocaleString('vi-VN') + " VNĐ";
+    document.getElementById("inv-subtotal").innerText = data.subtotal.toLocaleString('vi-VN') + " VNĐ";
     document.getElementById("inv-discount").innerText = "-" + discountAmount.toLocaleString('vi-VN') + " VNĐ";
-    document.getElementById("inv-total").innerText = finalTotal.toLocaleString('vi-VN') + " VNĐ";
+    document.getElementById("inv-total").innerText = data.finalTotal.toLocaleString('vi-VN') + " VNĐ";
 
-    document.getElementById("inv-shipper-name").innerText = assignedShipper.name;
-    document.getElementById("inv-shipper-phone").innerText = assignedShipper.phone;
-    document.getElementById("inv-shipper-phone").href = "tel:" + assignedShipper.phone;
-    document.getElementById("inv-otp-code").innerText = otpCode;
+    document.getElementById("inv-shipper-name").innerText = data.assignedShipper.name;
+    document.getElementById("inv-shipper-phone").innerText = data.assignedShipper.phone;
+    document.getElementById("inv-shipper-phone").href = "tel:" + data.assignedShipper.phone;
+    document.getElementById("inv-otp-code").innerText = data.otpCode;
 
-    // Xóa Voucher vừa dùng
+    // Xóa Voucher vừa sử dụng khỏi Kho Voucher
     if (selectedVoucherId) {
         myVouchers = myVouchers.filter(v => v.id !== selectedVoucherId);
         selectedVoucherId = null;
@@ -312,21 +395,23 @@ function checkout() {
     updateCartUI();
     document.getElementById("invoice-modal").style.display = "flex";
 
-    // Khởi chạy Shipper Tracker
+    // Bật Shipper Tracker Real-time
     const box = document.getElementById("order-progress-box");
     const bike = document.getElementById("shipper-bike");
     const status = document.getElementById("order-status-text");
     if (box) {
         box.style.display = "block";
         bike.style.left = "10px";
-        status.innerHTML = `Mã OTP: <span style="color:#20bf6b;">${otpCode}</span> | Shipper <b>${assignedShipper.name}</b> (${assignedShipper.phone}) đang nhận đơn...`;
+        status.innerHTML = `Mã OTP: <span style="color:#20bf6b;">${data.otpCode}</span> | Shipper <b>${data.assignedShipper.name}</b> (${data.assignedShipper.phone}) đang nhận đơn...`;
 
-        setTimeout(() => { bike.style.left = "45%"; status.innerHTML = `🛵 Shipper <b>${assignedShipper.name}</b> đang giao đồ ăn tới KTX...`; }, 3000);
-        setTimeout(() => { bike.style.left = "80%"; status.innerHTML = `✅ Shipper đã tới nơi! Gọi <b>${assignedShipper.phone}</b> để nhận món.`; }, 7000);
+        setTimeout(() => { bike.style.left = "45%"; status.innerHTML = `🛵 Shipper <b>${data.assignedShipper.name}</b> đang giao đồ ăn tới KTX...`; }, 3000);
+        setTimeout(() => { bike.style.left = "80%"; status.innerHTML = `✅ Shipper đã tới nơi! Gọi <b>${data.assignedShipper.phone}</b> để nhận món.`; }, 7000);
     }
+
+    pendingOrderData = null;
 }
 
-// 5. CÁC HÀM PHỤ TRỢ GIAO DIỆN
+// 6. CÁC HÀM GIAO DIỆN PHỤ TRỢ
 function renderFoodGrid(foods) {
     const grid = document.getElementById("food-grid");
     if (!grid) return;
@@ -460,25 +545,6 @@ function loadStudentInfo() {
 
 function openWheelModal() { document.getElementById("wheel-modal").style.display = "flex"; }
 function openLoginModal() { document.getElementById("login-modal").style.display = "flex"; }
-// 1. Hàm MỞ Modal khi bấm nút "Nạp tiền" ở Header
-function openTopUpModal() {
-    document.getElementById("topup-modal").style.display = "flex";
-}
-
-// 2. Hàm XÁC NHẬN NẠP TIỀN khi bấm nút trong Modal VietQR
-function confirmTopUp() {
-    const amount = 50000; // Mặc định cộng 50.000 VNĐ (hoặc thay đổi tùy bạn)
-    studentBalance += amount;
-
-    // Cập nhật lại số dư hiển thị trên thanh Header
-    const balanceEl = document.getElementById("student-balance");
-    if (balanceEl) {
-        balanceEl.innerText = studentBalance.toLocaleString('vi-VN') + " VNĐ";
-    }
-
-    alert(`Yêu cầu nạp tiền đã được gửi! Đã cộng +${amount.toLocaleString('vi-VN')} VNĐ vào Ví KTX.`);
-    closeModal('topup-modal'); // Đóng Modal
-}
 function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
 function loginStudent() {
@@ -489,14 +555,6 @@ function loginStudent() {
         closeModal('login-modal');
         loadStudentInfo();
     }
-}
-
-function confirmTopUp() {
-    const amount = parseFloat(document.getElementById("topup-amount").value);
-    studentBalance += amount;
-    document.getElementById("student-balance").innerText = studentBalance.toLocaleString('vi-VN') + " VNĐ";
-    alert(`Nạp thành công +${amount.toLocaleString('vi-VN')} VNĐ!`);
-    closeModal('topup-modal');
 }
 
 function filterFoods() {

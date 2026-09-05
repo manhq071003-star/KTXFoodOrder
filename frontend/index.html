@@ -99,7 +99,7 @@
     </div>
 </div>
 
-<!-- Modal Đăng Nhập & Nạp Tiền -->
+<!-- Modal Đăng Nhập -->
 <div id="login-modal" class="modal" style="display:none;">
     <div class="modal-content">
         <span class="close-btn" onclick="closeModal('login-modal')">&times;</span>
@@ -109,38 +109,68 @@
     </div>
 </div>
 
-<!-- Đóng thẻ div của Modal Hóa Đơn Thanh Toán -->
-<button class="btn-checkout" onclick="closeModal('invoice-modal')" style="margin-top: 15px; background: #ff5722;">ĐÃ HIỂU & ĐÓNG</button>
-</div>
-</div>
-
-<script src="app.js"></script>
-
-<!-- Modal QR Thanh Toán -->
+<!-- Modal Nạp Tiền VietQR -->
 <div id="topup-modal" class="modal" style="display:none;">
-    <div class="modal-content qr-modal">
+    <div class="modal-content" style="width: 400px; padding: 25px; border-radius: 12px; background: #fff; text-align: center;">
         <span class="close-btn" onclick="closeModal('topup-modal')">&times;</span>
-        <h3><i class="fa-solid fa-qrcode"></i> Nạp Tiền Vào Ví KTX</h3>
-        <p class="qr-desc">Quét mã VietQR bên dưới để nạp tiền tự động</p>
+        <h3 style="color: #2e7d32; font-size: 20px; margin-bottom: 15px;">
+            <i class="fa-solid fa-qrcode"></i> NẠP TIỀN VÀO VÍ KTX
+        </h3>
 
-        <div class="qr-container">
-            <img src="https://img.vietqr.io/image/MB-0968926394-compact.png?accountName=NGUYEN%20DINH%20THAI" alt="Mã QR VietQR MB Bank" class="qr-image">
+        <div style="text-align: left; margin-bottom: 15px;">
+            <label style="font-size: 13px; font-weight: bold; color: #555;">1. Chọn số tiền nạp:</label>
+            <select id="topup-amount" onchange="updateQrCode()" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc; margin-top:5px; font-weight:bold;">
+                <option value="50000">50.000 VNĐ</option>
+                <option value="100000">100.000 VNĐ</option>
+                <option value="200000">200.000 VNĐ</option>
+                <option value="500000">500.000 VNĐ</option>
+            </select>
         </div>
 
-        <div class="qr-info">
-            <p><strong>Chủ tài khoản:</strong> NGUYEN DINH THAI</p>
-            <p><strong>Ngân hàng:</strong> MBBank (Napas 247)</p>
-            <p><strong>Nội dung CK:</strong> <span class="syntax-highlight">NAP KTX [Mã Sinh Viên]</span></p>
+        <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+            <label style="font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 10px; text-align: left;">2. Quét mã VietQR bằng app Ngân hàng / MoMo:</label>
+            <img id="qr-code-img" src="" alt="Mã QR Nạp Tiền" style="width: 180px; height: 180px; border-radius: 8px; border: 2px solid #2e7d32; padding: 5px; background: #fff;">
+
+            <div style="font-size: 12px; color: #444; margin-top: 10px; text-align: left; line-height: 1.6;">
+                <p><b>Ngân hàng:</b> MBBank (Ngân hàng Quân Đội)</p>
+                <p><b>Số tài khoản:</b> <span style="color: #1e88e5; font-weight: bold;">0987654321</span></p>
+                <p><b>Chủ tài khoản:</b> BẾP KTX FOOD EXPRESS</p>
+                <p><b>Nội dung chuyển khoản:</b> <span id="topup-memo" style="color: #ff5722; font-weight: bold;">NAP KTX SV002</span></p>
+            </div>
         </div>
 
-        <button class="btn-confirm-topup" onclick="confirmTopUp()">
-            <i class="fa-solid fa-check-circle"></i> Tôi Đã Chuyển Khoản
+        <button class="btn-checkout" onclick="confirmTopUp()" style="background: #2e7d32; width: 100%;">
+            <i class="fa-solid fa-check-circle"></i> ĐÃ CHUYỂN KHỎAN & NẠP VÀO VÍ
         </button>
     </div>
 </div>
 
-</body>
-</html>
+<!-- Modal QR Thanh Toán Đơn Hàng -->
+<div id="payment-qr-modal" class="modal" style="display:none;">
+    <div class="modal-content" style="width: 400px; padding: 25px; border-radius: 12px; background: #fff; text-align: center;">
+        <span class="close-btn" onclick="closeModal('payment-qr-modal')">&times;</span>
+        <h3 style="color: #ff5722; font-size: 20px; margin-bottom: 15px;">
+            <i class="fa-solid fa-qrcode"></i> THANH TOÁN ĐƠN HÀNG QUA QR
+        </h3>
+
+        <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+            <p style="font-size: 13px; font-weight: bold; color: #555; margin-bottom: 10px; text-align: left;">Quét mã VietQR bằng App Ngân hàng / MoMo để thanh toán:</p>
+            <img id="pay-qr-code-img" src="" alt="Mã QR Thanh Toán" style="width: 200px; height: 200px; border-radius: 8px; border: 2px solid #ff5722; padding: 5px; background: #fff;">
+
+            <div style="font-size: 12px; color: #444; margin-top: 10px; text-align: left; line-height: 1.6;">
+                <p><b>Số tiền thanh toán:</b> <span id="pay-qr-amount" style="color: #ff5722; font-weight: bold; font-size: 15px;">0 VNĐ</span></p>
+                <p><b>Ngân hàng:</b> MBBank (Ngân hàng Quân Đội)</p>
+                <p><b>Số tài khoản:</b> <span style="color: #1e88e5; font-weight: bold;">0987654321</span></p>
+                <p><b>Chủ tài khoản:</b> BEP KTX FOOD EXPRESS</p>
+                <p><b>Nội dung:</b> <span id="pay-qr-memo" style="color: #ff5722; font-weight: bold;">ORD123456</span></p>
+            </div>
+        </div>
+
+        <button class="btn-checkout" onclick="confirmQrPayment()" style="background: #ff5722; width: 100%;">
+            <i class="fa-solid fa-check-circle"></i> ĐÃ CHUYỂN KHỎAN & THANH TOÁN
+        </button>
+    </div>
+</div>
 
 <!-- Modal Hóa Đơn Thanh Toán -->
 <div id="invoice-modal" class="modal" style="display:none;">
@@ -189,26 +219,5 @@
 </div>
 
 <script src="app.js"></script>
-<div id="topupModal" class="modal-overlay">
-    <div class="modal-content qr-modal">
-        <span class="close-modal" onclick="closeTopUpModal()">&times;</span>
-        <h3><i class="fa-solid fa-qrcode"></i> Nạp Tiền Vào Ví KTX</h3>
-        <p class="qr-desc">Quét mã VietQR bên dưới để nạp tiền tự động</p>
-
-        <div class="qr-container">
-            <img src="qr-code.png" alt="Mã QR MB Bank - NGUYEN DINH THAI" class="qr-image">
-        </div>
-
-        <div class="qr-info">
-            <p><strong>Chủ tài khoản:</strong> NGUYEN DINH THAI</p>
-            <p><strong>Ngân hàng:</strong> MBBank (Napas 247)</p>
-            <p><strong>Nội dung CK:</strong> <span class="syntax-highlight">NAP KTX [Mã Sinh Viên]</span></p>
-        </div>
-
-        <button class="btn-confirm-topup" onclick="confirmTopUp()">
-            <i class="fa-solid fa-check-circle"></i> Tôi Đã Chuyển Khoản
-        </button>
-    </div>
-</div>
 </body>
 </html>
