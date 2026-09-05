@@ -460,7 +460,25 @@ function loadStudentInfo() {
 
 function openWheelModal() { document.getElementById("wheel-modal").style.display = "flex"; }
 function openLoginModal() { document.getElementById("login-modal").style.display = "flex"; }
-function openTopUpModal() { document.getElementById("topup-modal").style.display = "flex"; }
+// 1. Hàm MỞ Modal khi bấm nút "Nạp tiền" ở Header
+function openTopUpModal() {
+    document.getElementById("topup-modal").style.display = "flex";
+}
+
+// 2. Hàm XÁC NHẬN NẠP TIỀN khi bấm nút trong Modal VietQR
+function confirmTopUp() {
+    const amount = 50000; // Mặc định cộng 50.000 VNĐ (hoặc thay đổi tùy bạn)
+    studentBalance += amount;
+
+    // Cập nhật lại số dư hiển thị trên thanh Header
+    const balanceEl = document.getElementById("student-balance");
+    if (balanceEl) {
+        balanceEl.innerText = studentBalance.toLocaleString('vi-VN') + " VNĐ";
+    }
+
+    alert(`Yêu cầu nạp tiền đã được gửi! Đã cộng +${amount.toLocaleString('vi-VN')} VNĐ vào Ví KTX.`);
+    closeModal('topup-modal'); // Đóng Modal
+}
 function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
 function loginStudent() {

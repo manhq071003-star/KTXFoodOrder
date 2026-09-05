@@ -43,3 +43,67 @@ body { background-color: #f4f6f9; color: #333; }
 .modal-content { background: #fff; padding: 25px; border-radius: 12px; width: 360px; position: relative; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
 .close-btn { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; color: #aaa; }
 .close-btn:hover { color: #000; }
+
+/* Modal Nạp Tiền QR */
+.qr-modal {
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 16px;
+}
+
+.qr-desc {
+    font-size: 13px;
+    color: #666;
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+.qr-container {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 12px;
+    display: inline-block;
+    border: 1px solid #eee;
+}
+
+.qr-image {
+    width: 240px;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+}
+
+.qr-info {
+    text-align: left;
+    background: #f1f5f9;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+}
+
+.syntax-highlight {
+    color: #d32f2f;
+    font-weight: bold;
+    background: #ffebee;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.btn-confirm-topup {
+    width: 100%;
+    padding: 12px;
+    background: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-confirm-topup:hover {
+    background: #388e3c;
+}

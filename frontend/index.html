@@ -109,18 +109,38 @@
     </div>
 </div>
 
+<!-- Đóng thẻ div của Modal Hóa Đơn Thanh Toán -->
+<button class="btn-checkout" onclick="closeModal('invoice-modal')" style="margin-top: 15px; background: #ff5722;">ĐÃ HIỂU & ĐÓNG</button>
+</div>
+</div>
+
+<script src="app.js"></script>
+
+<!-- Modal QR Thanh Toán -->
 <div id="topup-modal" class="modal" style="display:none;">
-    <div class="modal-content">
+    <div class="modal-content qr-modal">
         <span class="close-btn" onclick="closeModal('topup-modal')">&times;</span>
-        <h3>💳 Nạp Tiền Vào Ví KTX</h3>
-        <select id="topup-amount" style="width:100%; padding:10px; margin:15px 0; border:1px solid #ccc; border-radius:6px;">
-            <option value="50000">50.000 VNĐ</option>
-            <option value="100000">100.000 VNĐ</option>
-            <option value="200000">200.000 VNĐ</option>
-        </select>
-        <button class="btn-checkout" onclick="confirmTopUp()">XÁC NHẬN NẠP TIỀN</button>
+        <h3><i class="fa-solid fa-qrcode"></i> Nạp Tiền Vào Ví KTX</h3>
+        <p class="qr-desc">Quét mã VietQR bên dưới để nạp tiền tự động</p>
+
+        <div class="qr-container">
+            <img src="https://img.vietqr.io/image/MB-0968926394-compact.png?accountName=NGUYEN%20DINH%20THAI" alt="Mã QR VietQR MB Bank" class="qr-image">
+        </div>
+
+        <div class="qr-info">
+            <p><strong>Chủ tài khoản:</strong> NGUYEN DINH THAI</p>
+            <p><strong>Ngân hàng:</strong> MBBank (Napas 247)</p>
+            <p><strong>Nội dung CK:</strong> <span class="syntax-highlight">NAP KTX [Mã Sinh Viên]</span></p>
+        </div>
+
+        <button class="btn-confirm-topup" onclick="confirmTopUp()">
+            <i class="fa-solid fa-check-circle"></i> Tôi Đã Chuyển Khoản
+        </button>
     </div>
 </div>
+
+</body>
+</html>
 
 <!-- Modal Hóa Đơn Thanh Toán -->
 <div id="invoice-modal" class="modal" style="display:none;">
@@ -169,5 +189,26 @@
 </div>
 
 <script src="app.js"></script>
+<div id="topupModal" class="modal-overlay">
+    <div class="modal-content qr-modal">
+        <span class="close-modal" onclick="closeTopUpModal()">&times;</span>
+        <h3><i class="fa-solid fa-qrcode"></i> Nạp Tiền Vào Ví KTX</h3>
+        <p class="qr-desc">Quét mã VietQR bên dưới để nạp tiền tự động</p>
+
+        <div class="qr-container">
+            <img src="qr-code.png" alt="Mã QR MB Bank - NGUYEN DINH THAI" class="qr-image">
+        </div>
+
+        <div class="qr-info">
+            <p><strong>Chủ tài khoản:</strong> NGUYEN DINH THAI</p>
+            <p><strong>Ngân hàng:</strong> MBBank (Napas 247)</p>
+            <p><strong>Nội dung CK:</strong> <span class="syntax-highlight">NAP KTX [Mã Sinh Viên]</span></p>
+        </div>
+
+        <button class="btn-confirm-topup" onclick="confirmTopUp()">
+            <i class="fa-solid fa-check-circle"></i> Tôi Đã Chuyển Khoản
+        </button>
+    </div>
+</div>
 </body>
 </html>
