@@ -11,6 +11,10 @@
 <header class="navbar">
     <div class="logo"><i class="fa-solid fa-utensils"></i> KTX FoodExpress</div>
     <div class="nav-right">
+        <!-- Nút Toggle Chế Độ Nền Tối -->
+        <button id="theme-toggle" class="btn-theme" onclick="toggleTheme()">
+            <i class="fa-solid fa-moon"></i> <span>Nền Tối</span>
+        </button>
         <a href="admin.html" class="btn-admin"><i class="fa-solid fa-kitchen-set"></i> Bếp KTX Admin</a>
         <button class="btn-wheel" onclick="openWheelModal()"><i class="fa-solid fa-award"></i> Vòng Quay May Mắn</button>
         <div class="user-info">
@@ -28,6 +32,15 @@
             <input type="text" id="search-input" placeholder="Tìm kiếm món ăn, trà sữa..." onkeyup="filterFoods()">
         </div>
 
+        <!-- Banner Slider Quảng Cáo KTX -->
+        <div class="banner-slider" style="margin-bottom: 20px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); position: relative; height: 130px; background: linear-gradient(135deg, #ff5722, #ff9800); color: #fff; display: flex; align-items: center; padding: 0 25px;">
+            <div>
+                <span style="background: rgba(255,255,255,0.25); padding: 4px 10px; border-radius: 15px; font-size: 11px; font-weight: bold; letter-spacing: 0.5px;">🔥 SIÊU ƯU ĐÃI BẾP KTX</span>
+                <h2 style="font-size: 20px; margin: 6px 0 4px 0;">Freeship Tận Phòng KTX Cho Đơn Từ 50.000 VNĐ!</h2>
+                <p style="font-size: 13px; opacity: 0.95;">Thanh toán bằng Ví KTX hoặc quét QR VietQR để nhận ưu đãi ngay hôm nay.</p>
+            </div>
+        </div>
+
         <!-- Mục Phân Loại Đồ Ăn -->
         <div class="category-tabs">
             <button class="cat-btn active" onclick="filterCategory('all', this)">All Tất cả</button>
@@ -38,6 +51,25 @@
 
         <h2>🍴 Thực Đơn Hôm Nay</h2>
         <div class="food-grid" id="food-grid"></div>
+
+        <!-- Khối Đánh Giá Từ Sinh Viên KTX -->
+        <div class="feedback-section" style="margin-top: 35px; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.04);">
+            <h3 style="font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-comments" style="color:#ff5722;"></i> Đánh Giá Từ Sinh Viên KTX</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+                <div class="feedback-card" style="padding: 12px; border-radius: 8px; border-left: 4px solid #ff5722;">
+                    <p style="font-size: 12px; margin-bottom: 8px;">"Bún bò Huế giao tận phòng P301 siêu nhanh, nước dùng đậm đà hot bừng bừng!"</p>
+                    <span style="font-size: 11px; font-weight: bold;">- Nguyễn Văn A (Phòng 301) ⭐⭐⭐⭐⭐</span>
+                </div>
+                <div class="feedback-card" style="padding: 12px; border-radius: 8px; border-left: 4px solid #4caf50;">
+                    <p style="font-size: 12px; margin-bottom: 8px;">"Trà sữa thái xanh đậm vị, thêm trân châu dẻo ngon chuẩn vị!"</p>
+                    <span style="font-size: 11px; font-weight: bold;">- Lê Thị C (Phòng 205) ⭐⭐⭐⭐⭐</span>
+                </div>
+                <div class="feedback-card" style="padding: 12px; border-radius: 8px; border-left: 4px solid #1e88e5;">
+                    <p style="font-size: 12px; margin-bottom: 8px;">"Nạp tiền qua mã VietQR tự động cộng tiền ví KTX cực kỳ tiện lợi."</p>
+                    <span style="font-size: 11px; font-weight: bold;">- Phạm Hoàng D (Phòng 412) ⭐⭐⭐⭐⭐</span>
+                </div>
+            </div>
+        </div>
     </section>
 
     <aside class="cart-section">
@@ -48,20 +80,26 @@
 
         <!-- Kho Voucher -->
         <div class="voucher-box" style="margin-bottom:15px;">
-            <label style="font-size:13px; font-weight:bold; color:#555;">🎟️ Chọn Voucher:</label>
-            <select id="voucher-select" onchange="applyVoucherSelect()" style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; margin-top:5px;">
+            <label style="font-size:13px; font-weight:bold;">🎟️ Chọn Voucher:</label>
+            <select id="voucher-select" onchange="applyVoucherSelect()" style="width:100%; padding:8px; border-radius:6px; margin-top:5px;">
                 <option value="">Không dùng Voucher</option>
             </select>
         </div>
 
         <!-- Phương Thức Thanh Toán -->
         <div class="payment-method-box" style="margin-bottom:15px;">
-            <label style="font-size:13px; font-weight:bold; color:#555;">💳 Phương Thức Thanh Toán:</label>
-            <select id="payment-method" style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; margin-top:5px;">
+            <label style="font-size:13px; font-weight:bold;">💳 Phương Thức Thanh Toán:</label>
+            <select id="payment-method" style="width:100%; padding:8px; border-radius:6px; margin-top:5px;">
                 <option value="wallet">Ví Sinh Viên KTX (Trừ tự động)</option>
                 <option value="cash">Tiền mặt khi nhận hàng (COD)</option>
                 <option value="bank">Chuyển khoản QR Ngân hàng</option>
             </select>
+        </div>
+
+        <!-- Ô Ghi Chú Đơn Hàng -->
+        <div class="note-box" style="margin-bottom:15px;">
+            <label style="font-size:13px; font-weight:bold;">📝 Ghi chú cho Bếp:</label>
+            <input type="text" id="order-note" placeholder="VD: Ít cay, không hành, ít đường..." style="width:100%; padding:8px 10px; border-radius:6px; margin-top:5px; font-size:13px; outline:none;">
         </div>
 
         <div class="cart-summary">
@@ -71,20 +109,48 @@
             <button class="btn-checkout" onclick="checkout()"><i class="fa-solid fa-check-double"></i> XÁC NHẬN ĐẶT MÓN</button>
         </div>
 
+        <!-- Cam Kết Dịch Vụ Bếp KTX -->
+        <div class="trust-box" style="margin-top: 20px; border: 1px dashed #ced4da; border-radius: 8px; padding: 12px; font-size: 12px; line-height: 1.6;">
+            <p style="font-weight: bold; color: #ff5722; margin-bottom: 5px;"><i class="fa-solid fa-shield-halved"></i> CAM KẾT BẾP KTX EXPRESS:</p>
+            <p>⚡ Giao hàng tận phòng KTX chỉ <b>10 - 15 phút</b></p>
+            <p>🍲 Món ăn luôn đảm bảo nóng hổi & vệ sinh</p>
+            <p>📞 Hotline hỗ trợ KTX: <b>0912.345.678</b></p>
+        </div>
+
         <!-- Shipper Tracker Real-time -->
         <div id="order-progress-box" style="display:none; margin-top:20px; border-top:2px dashed #ddd; padding-top:15px;">
             <h4 style="color:#ff5722; font-size:15px;"><i class="fa-solid fa-truck-fast"></i> Tiến Trình Đơn Hàng Gần Đây</h4>
             <div style="position:relative; width:100%; height:80px; background:#e9ecef; border-radius:10px; margin-top:10px; overflow:hidden;">
-                <div style="position:absolute; left:10px; top:28px; font-weight:bold; font-size:12px;">🍳 Bếp KTX</div>
-                <div style="position:absolute; right:10px; top:28px; font-weight:bold; font-size:12px;">🏢 Phòng KTX</div>
+                <div style="position:absolute; left:10px; top:28px; font-weight:bold; font-size:12px; color:#333;">🍳 Bếp KTX</div>
+                <div style="position:absolute; right:10px; top:28px; font-weight:bold; font-size:12px; color:#333;">🏢 Phòng KTX</div>
                 <div id="shipper-bike" style="position:absolute; left:10px; top:22px; font-size:26px; transition: left 1.5s ease-in-out;">🛵</div>
             </div>
-            <p id="order-status-text" style="font-size:13px; color:#333; margin-top:10px; text-align:center; font-weight:600;">
+            <p id="order-status-text" style="font-size:13px; margin-top:10px; text-align:center; font-weight:600;">
                 Mã OTP: <span id="otp-code" style="color:#20bf6b;">1234</span> | Đã gửi đơn tới nhà bếp...
             </p>
         </div>
     </aside>
 </main>
+
+<!-- Modal Chọn Topping Cho Món Ăn -->
+<div id="topping-modal" class="modal" style="display:none;">
+    <div class="modal-content" style="width: 380px; padding: 20px; border-radius: 12px;">
+        <span class="close-btn" onclick="closeModal('topping-modal')">&times;</span>
+        <div style="text-align: center; margin-bottom: 15px;">
+            <h3 id="topping-food-name" style="color: #ff5722; font-size: 18px;">Tên món ăn</h3>
+            <p id="topping-food-price" style="font-size: 13px; font-weight: bold;">0 VNĐ</p>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 10px;">➕ Chọn Topping kèm theo:</label>
+            <div id="topping-options-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto;"></div>
+        </div>
+
+        <button class="btn-checkout" onclick="confirmAddToCartWithToppings()" style="background: #ff5722; width: 100%;">
+            <i class="fa-solid fa-cart-plus"></i> THÊM VÀO GIỎ HÀNG
+        </button>
+    </div>
+</div>
 
 <!-- Modal Vòng Quay May Mắn -->
 <div id="wheel-modal" class="modal" style="display:none;">
@@ -111,15 +177,15 @@
 
 <!-- Modal Nạp Tiền VietQR -->
 <div id="topup-modal" class="modal" style="display:none;">
-    <div class="modal-content" style="width: 400px; padding: 25px; border-radius: 12px; background: #fff; text-align: center;">
+    <div class="modal-content" style="width: 400px; padding: 25px; border-radius: 12px; text-align: center;">
         <span class="close-btn" onclick="closeModal('topup-modal')">&times;</span>
         <h3 style="color: #2e7d32; font-size: 20px; margin-bottom: 15px;">
             <i class="fa-solid fa-qrcode"></i> NẠP TIỀN VÀO VÍ KTX
         </h3>
 
         <div style="text-align: left; margin-bottom: 15px;">
-            <label style="font-size: 13px; font-weight: bold; color: #555;">1. Chọn số tiền nạp:</label>
-            <select id="topup-amount" onchange="updateQrCode()" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc; margin-top:5px; font-weight:bold;">
+            <label style="font-size: 13px; font-weight: bold;">1. Chọn số tiền nạp:</label>
+            <select id="topup-amount" onchange="updateQrCode()" style="width:100%; padding:10px; border-radius:6px; margin-top:5px; font-weight:bold;">
                 <option value="50000">50.000 VNĐ</option>
                 <option value="100000">100.000 VNĐ</option>
                 <option value="200000">200.000 VNĐ</option>
@@ -127,11 +193,11 @@
             </select>
         </div>
 
-        <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
-            <label style="font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 10px; text-align: left;">2. Quét mã VietQR bằng app Ngân hàng / MoMo:</label>
+        <div style="border: 1px solid #e9ecef; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+            <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 10px; text-align: left;">2. Quét mã VietQR bằng app Ngân hàng / MoMo:</label>
             <img id="qr-code-img" src="" alt="Mã QR Nạp Tiền" style="width: 180px; height: 180px; border-radius: 8px; border: 2px solid #2e7d32; padding: 5px; background: #fff;">
 
-            <div style="font-size: 12px; color: #444; margin-top: 10px; text-align: left; line-height: 1.6;">
+            <div style="font-size: 12px; margin-top: 10px; text-align: left; line-height: 1.6;">
                 <p><b>Ngân hàng:</b> MBBank (Ngân hàng Quân Đội)</p>
                 <p><b>Số tài khoản:</b> <span style="color: #1e88e5; font-weight: bold;">0987654321</span></p>
                 <p><b>Chủ tài khoản:</b> BẾP KTX FOOD EXPRESS</p>
@@ -147,17 +213,17 @@
 
 <!-- Modal QR Thanh Toán Đơn Hàng -->
 <div id="payment-qr-modal" class="modal" style="display:none;">
-    <div class="modal-content" style="width: 400px; padding: 25px; border-radius: 12px; background: #fff; text-align: center;">
+    <div class="modal-content" style="width: 400px; padding: 25px; border-radius: 12px; text-align: center;">
         <span class="close-btn" onclick="closeModal('payment-qr-modal')">&times;</span>
         <h3 style="color: #ff5722; font-size: 20px; margin-bottom: 15px;">
             <i class="fa-solid fa-qrcode"></i> THANH TOÁN ĐƠN HÀNG QUA QR
         </h3>
 
-        <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
-            <p style="font-size: 13px; font-weight: bold; color: #555; margin-bottom: 10px; text-align: left;">Quét mã VietQR bằng App Ngân hàng / MoMo để thanh toán:</p>
+        <div style="border: 1px solid #e9ecef; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+            <p style="font-size: 13px; font-weight: bold; margin-bottom: 10px; text-align: left;">Quét mã VietQR bằng App Ngân hàng / MoMo để thanh toán:</p>
             <img id="pay-qr-code-img" src="" alt="Mã QR Thanh Toán" style="width: 200px; height: 200px; border-radius: 8px; border: 2px solid #ff5722; padding: 5px; background: #fff;">
 
-            <div style="font-size: 12px; color: #444; margin-top: 10px; text-align: left; line-height: 1.6;">
+            <div style="font-size: 12px; margin-top: 10px; text-align: left; line-height: 1.6;">
                 <p><b>Số tiền thanh toán:</b> <span id="pay-qr-amount" style="color: #ff5722; font-weight: bold; font-size: 15px;">0 VNĐ</span></p>
                 <p><b>Ngân hàng:</b> MBBank (Ngân hàng Quân Đội)</p>
                 <p><b>Số tài khoản:</b> <span style="color: #1e88e5; font-weight: bold;">0987654321</span></p>
@@ -174,11 +240,11 @@
 
 <!-- Modal Hóa Đơn Thanh Toán -->
 <div id="invoice-modal" class="modal" style="display:none;">
-    <div class="modal-content" style="width: 420px; padding: 25px; border-radius: 12px; background: #fff;">
+    <div class="modal-content" style="width: 420px; padding: 25px; border-radius: 12px;">
         <span class="close-btn" onclick="closeModal('invoice-modal')">&times;</span>
         <div style="text-align: center; border-bottom: 2px dashed #ddd; padding-bottom: 15px; margin-bottom: 15px;">
             <h3 style="color: #ff5722; font-size: 20px;"><i class="fa-solid fa-receipt"></i> HÓA ĐƠN ĐẶT MÓN</h3>
-            <p style="font-size: 12px; color: #777; margin-top: 5px;">Bếp KTX Express - Cổng KTX Sinh Viên</p>
+            <p style="font-size: 12px; margin-top: 5px;">Bếp KTX Express - Cổng KTX Sinh Viên</p>
         </div>
 
         <div style="font-size: 13px; line-height: 1.6; margin-bottom: 15px;">
@@ -187,6 +253,7 @@
             <p><b>Khách hàng:</b> <span id="inv-student-name">--</span> (<span id="inv-student-id">--</span>)</p>
             <p><b>Địa điểm giao:</b> Phòng KTX <span id="inv-room">--</span></p>
             <p><b>Thanh toán:</b> <span id="inv-payment-method" style="font-weight: bold; color: #2e7d32;">--</span></p>
+            <p><b>Ghi chú:</b> <span id="inv-order-note" style="color: #ff5722;">--</span></p>
         </div>
 
         <div style="border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 10px 0; margin-bottom: 15px; max-height: 150px; overflow-y: auto;">
@@ -207,7 +274,7 @@
         </div>
 
         <!-- Thông tin Shipper KTX -->
-        <div style="background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 8px; padding: 12px; font-size: 13px;">
+        <div style="background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 8px; padding: 12px; font-size: 13px; color:#333;">
             <p style="font-weight: bold; color: #2e7d32; margin-bottom: 5px;"><i class="fa-solid fa-motorcycle"></i> THÔNG TIN SHIPPER PHỤ TRÁCH:</p>
             <p><b>Họ tên Shipper:</b> <span id="inv-shipper-name">Nguyễn Văn Hoàng</span></p>
             <p><b>Số điện thoại:</b> <a id="inv-shipper-phone" href="#" style="color: #1e88e5; font-weight: bold; text-decoration: none;">0987.654.321</a></p>
